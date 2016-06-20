@@ -1,5 +1,84 @@
-{% extends "base.html" %}
-{% block content %}
-    <h1>Result</h1>
-    URL conversion requested for : {{ url }}
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+    <title>{{ title }} - web to email</title>
+    {% else %}
+    <title>Welcome to web to email converter</title>
+    {% endif %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        var code = 0;
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        };
+
+        // UNSAFE with unsafe strings; only use on previously-escaped ones!
+        function unescapeHtml(escapedStr) {
+            var div = document.createElement('div');
+            div.innerHTML = escapedStr;
+            var child = div.childNodes[0];
+            return child ? child.nodeValue : '';
+        };
+
+
+        $(document).on('click', '.toggle-button', function() {
+            $(this).toggleClass('toggle-button-selected');
+            if(code == 0){
+                var html = $( "#result" ).html()
+                html = escapeHtml(html);
+                $( "#result" ).html(html);
+                code = 1;
+            } else {
+                var html = $( "#result" ).html()
+                html = unescapeHtml(html);
+                $( "#result" ).html(html);
+                code = 0;
+            }
+        });
+    </script>
+
+
+</head>
+<body>
+    <div>Web to Email: <a href="/">Home</a></div>
+    <hr>
+    Content
+    <div class="toggle-button">
+        <button></button>
+    </div>
+    HTML Code
+    <hr>
+    <div id="result">
+        <wrapper class="header">
+            <container>
+                <row class="collapse">
+                    <columns small="6">
+                        {% if banner_image %}
+                        {{ banner_image | safe }}
+                        {% endif %}
+                    </columns>
+                </row>
+            </container>
+        </wrapper>
+
+        <container>
+            <spacer size="16"></spacer>
+
+            <row>
+                <columns small="12">
+                    {% if title %}
+                    <h1>{{ title }}</h1>
+                    {% endif %}
+                    {{ content | safe }}
+                </columns>
+            </row>
+        </container>
+    </div>
+</body>
+</html>

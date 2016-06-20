@@ -7,9 +7,11 @@
     {% else %}
     <title>Welcome to web to email converter</title>
     {% endif %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div>Web to Email: <a href="/index">Home</a></div>
+    <div>Web to Email: <a href="/">Home</a></div>
     <hr>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
