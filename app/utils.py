@@ -2,7 +2,6 @@ from urlparse import urljoin
 import bs4
 import requests
 from bs4 import BeautifulSoup
-from tidylib import tidy_fragment
 import re
 import urllib
 import cStringIO
@@ -489,9 +488,9 @@ class ArticleScraper(object):
         else:
             article_body = ''
 
-        article_body, errors = tidy_fragment(article_body, options={'numeric-entities': 1})
+        # article_body, errors = tidy_fragment(article_body, options={'numeric-entities': 1})
 
-        return article_body, article_body_no_html
+        return article_body  # , article_body_no_html
 
     def get_categories(self, page_html):
         """
