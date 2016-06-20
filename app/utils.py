@@ -186,7 +186,7 @@ class PageScraper(object):
         :return:
         """
         premailer = Premailer(html=tag_text,
-                      external_styles=['app/static/ucsc.css',])
+                      external_styles=['app/static/email_style.css',])
 
         output = premailer.transform()
 
