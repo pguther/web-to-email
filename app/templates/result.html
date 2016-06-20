@@ -75,7 +75,7 @@
             <tr>
                 <td>
                     {% if title %}
-                    <h1>{{ title }}</h1>
+                    {{ title | safe }}
                     {% endif %}
                 </td>
             </tr>

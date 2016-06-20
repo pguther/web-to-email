@@ -8,6 +8,7 @@ import cStringIO
 from unidecode import unidecode
 from PIL import Image
 import datetime
+from premailer import Premailer
 
 
 class ContentNotHTMLException(Exception):
@@ -156,14 +157,7 @@ class PageScraper(object):
         :param body:
         :return:
         """
-        title_tag = body.find("h1", {"id": "title"})
-        if title_tag is not None:
-            raw_title = title_tag.get_text()
-            title = str(self.gremlin_zapper.zap_string(raw_title))
-        else:
-            title = None
-
-        return title
+        return str(body.find("h1", {"id": "title"}))
 
     def get_content(self, body):
         """
@@ -184,6 +178,26 @@ class PageScraper(object):
             content_tag_string += str(item)
 
         return content_tag_string
+
+    def add_inline_ucsc_css(self, tag_text):
+        """
+        adds inline ucsc css to the given body
+        :param body:
+        :return:
+        """
+        premailer = Premailer(html=tag_text,
+                      external_styles=['app/static/ucsc.css',])
+
+        output = premailer.transform()
+
+        soup = BeautifulSoup(output, 'lxml')
+
+        body_contents = ''
+
+        for item in soup.body.contents:
+            body_contents += str(item)
+
+        return body_contents
 
     def get_banner_image(self, body):
         """
@@ -237,6 +251,14 @@ class PageScraper(object):
         soup = self.utils.get_soup_from_url(page_url)
 
         body = soup.find("div", {"id": "main"})
+
+        self.utils.zap_tag_contents(body)
+
+        inline_body_string = self.add_inline_ucsc_css(str(body))
+
+        inline_body_soup = BeautifulSoup(inline_body_string, 'lxml')
+
+        body = inline_body_soup.find("div", {"id": "main"})
 
         self.convert_urls(body, page_url)
 

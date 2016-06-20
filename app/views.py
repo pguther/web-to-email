@@ -23,6 +23,7 @@ def index():
             return render_template('result.html', banner_image=article_dictionary['banner_image'],
                                    title=article_dictionary['title'],
                                    content=article_dictionary['content'])
+
         return render_template('index.html',
                                form=form)
 

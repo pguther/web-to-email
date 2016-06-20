@@ -1,10 +1,16 @@
-from app.utils import PageScraper
+from premailer import Premailer
+from bs4 import BeautifulSoup
 
-scraper = PageScraper()
-article_dictionary = scraper.scrape_page('http://history.ucsc.edu/graduate/index.html')
+premailer = Premailer(html="<p>Welcome to the Graduate Program, Department of History at the University of California, Santa Cruz.</p>",
+                      external_styles=['app/static/ucsc.css',])
 
-print "title: " + str(article_dictionary['title'])
+output = premailer.transform()
 
-print "banner image: " + str(article_dictionary['banner_image'])
+soup = BeautifulSoup(output, 'lxml')
 
-print "content: " + str(article_dictionary['content'])
+body_contents = ''
+
+for item in soup.body.contents:
+    body_contents += str(item)
+print "==========================================================="
+print body_contents
