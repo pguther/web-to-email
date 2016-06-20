@@ -51,39 +51,40 @@
 
 </head>
 <body>
-    <div>Web to Email: <a href="/">Home</a></div>
+    <div align="center">Web to Email: <a href="/">Home</a></div>
     <hr>
-    Content
-    <div class="toggle-button">
-        <button></button>
+    <div class="button-wrapper centered" align="center">
+        Content
+        <div class="toggle-button">
+            <button></button>
+        </div>
+        HTML Code
     </div>
-    HTML Code
+
     <hr>
     <div id="result">
-        <wrapper class="header">
-            <container>
-                <row class="collapse">
-                    <columns small="6">
-                        {% if banner_image %}
-                        {{ banner_image | safe }}
-                        {% endif %}
-                    </columns>
-                </row>
-            </container>
-        </wrapper>
 
-        <container>
-            <spacer size="16"></spacer>
-
-            <row>
-                <columns small="12">
+        <table width="600" cellspacing="0" cellpadding="0" border="0" align="center">
+            <tr>
+                <td>
+                    {% if banner_image %}
+                    {{ banner_image | safe }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>
                     {% if title %}
                     <h1>{{ title }}</h1>
                     {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>
                     {{ content | safe }}
-                </columns>
-            </row>
-        </container>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

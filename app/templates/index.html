@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Convert a Level 3 ucsc page to email format</h1>
-  <form action="" method="post" name="get_url">
-      {{ form.hidden_tag() }}
-      <p>
-          Please enter the URL of the page:<br>
-          {{ form.url(size=80) }}<br>
-      </p>
-      <p><input type="submit" value="Get Email Format HTML"></p>
-  </form>
+    <div align="center">
+      <h1>Convert a Level 3 ucsc page to email format</h1>
+        <form action="" method="post" name="get_url">
+            {{ form.hidden_tag() }}
+            <p>
+                Please enter the URL of the page:<br>
+                {{ form.url(size=80) }}<br>
+            </p>
+            <p><input type="submit" value="Get Email Format HTML"></p>
+        </form>  
+    </div>
 {% endblock %}
