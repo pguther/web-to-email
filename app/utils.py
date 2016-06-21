@@ -117,6 +117,54 @@ class ArticleUtils:
             raise ContentNotHTMLException()
         return BeautifulSoup(r.content, 'lxml')
 
+    def convert_urls(self, body, page_url):
+        """
+        converts all urls in the body from relative to full urls
+        :param page_url:
+        :param body:
+        :return:
+        """
+        images = body.findAll("img")
+        if images is not None:
+            for image in images:
+                image_relative_src = image['src']
+                image_src = urljoin(page_url, image_relative_src)
+                image['src'] = image_src
+
+        iframes = body.findAll("iframe")
+        if iframes is not None:
+            for iframe in iframes:
+                iframe_relative_src = iframe['src']
+                iframe_src = urljoin(page_url, iframe_relative_src)
+                iframe['src'] = iframe_src
+
+        links = body.findAll("a")
+        if links is not None:
+            for link in links:
+                link_relative_src = link['href']
+                link_src = urljoin(page_url, link_relative_src)
+                link['href'] = link_src
+
+    def add_inline_ucsc_css(self, tag_text):
+        """
+        adds inline ucsc css to the given body
+        :param body:
+        :return:
+        """
+        premailer = Premailer(html=tag_text,
+                      external_styles=['app/static/email_style.css',])
+
+        output = premailer.transform()
+
+        soup = BeautifulSoup(output, 'lxml')
+
+        body_contents = ''
+
+        for item in soup.body.contents:
+            body_contents += str(item)
+
+        return body_contents
+
     def zap_tag_contents(self, tag):
         """
         Converts any Windows cp1252 or unicode characters in the text of
@@ -188,26 +236,6 @@ class PageScraper(object):
 
         return content_tag_string
 
-    def add_inline_ucsc_css(self, tag_text):
-        """
-        adds inline ucsc css to the given body
-        :param body:
-        :return:
-        """
-        premailer = Premailer(html=tag_text,
-                      external_styles=['app/static/email_style.css',])
-
-        output = premailer.transform()
-
-        soup = BeautifulSoup(output, 'lxml')
-
-        body_contents = ''
-
-        for item in soup.body.contents:
-            body_contents += str(item)
-
-        return body_contents
-
     def get_banner_image(self, body):
         """
         returns the banner image url
@@ -222,35 +250,6 @@ class PageScraper(object):
 
         return banner_image
 
-    def convert_urls(self, body, page_url):
-        """
-        converts all urls in the body from relative to full urls
-        :param page_url:
-        :param body:
-        :return:
-        """
-        images = body.findAll("img")
-        if images is not None:
-            for image in images:
-                image_relative_src = image['src']
-                image_src = urljoin(page_url, image_relative_src)
-                image['src'] = image_src
-
-        iframes = body.findAll("iframe")
-        if iframes is not None:
-            for iframe in iframes:
-                iframe_relative_src = iframe['src']
-                iframe_src = urljoin(page_url, iframe_relative_src)
-                iframe['src'] = iframe_src
-
-        links = body.findAll("a")
-        if links is not None:
-            for link in links:
-                link_relative_src = link['href']
-                link_src = urljoin(page_url, link_relative_src)
-                link['href'] = link_src
-
-
     def scrape_page(self, page_url):
         """
 
@@ -260,28 +259,20 @@ class PageScraper(object):
         soup = self.utils.get_soup_from_url(page_url)
 
         body = soup.find("div", {"id": "main"})
-        # print '================================================='
-        # print str(body)
 
         self.utils.zap_tag_contents(body)
 
-        inline_body_string = self.add_inline_ucsc_css(str(body))
+        inline_body_string = self.utils.add_inline_ucsc_css(str(body))
 
         inline_body_soup = BeautifulSoup(inline_body_string, 'lxml')
 
-        # print '================================================='
-        # print str(inline_body_soup)
-
         body = inline_body_soup.find("div", {"id": "main"})
 
-        self.convert_urls(body, page_url)
+        self.utils.convert_urls(body, page_url)
 
         title = self.get_title(body)
 
         content = self.get_content(body)
-
-        # print '================================================='
-        # print content
 
         banner_image = self.get_banner_image(body)
 
@@ -308,19 +299,6 @@ class ArticleScraper(object):
         self.word_regex = re.compile(r"([^\s\n\r\t]+)")
         self.author_regex = re.compile(r"By\s*(.+)")
 
-        self.author_whitelist = {
-            'tim stephens':                 'Tim Stephens',
-            'jennifer mcnulty':             'Jennifer McNulty',
-            'scott rappaport':              'Scott Rappaport',
-            'gwen mickelson':               'Gwen Jourdonnais',
-            'gwen jourdonnais':             'Gwen Jourdonnais',
-            'dan white':                    'Daniel White',
-            'daniel white':                 'Daniel White',
-            'scott hernandez-jason':        'Scott Hernandez-Jason',
-            'peggy townsend':               'Peggy Townsend',
-            'public information office':    'Public Information Office'
-        }
-
     def get_next_index(self):
         """
         Used as a counter to give each item (posts, images, and videos) a unique ID
@@ -337,39 +315,17 @@ class ArticleScraper(object):
         """
         author_tag = body.find("span", {"class": "name"})
         if author_tag is not None:
-            self.utils.zap_tag_contents(author_tag)
-            author = author_tag.get_text()
-        else:
-            author = 'Public Information Office'
+            author_tag = str(author_tag)
 
         author_telephone_tag = body.find("span", {"class": "tel"})
         if author_telephone_tag is not None:
-            self.utils.zap_tag_contents(author_telephone_tag)
-            author_telephone = author_telephone_tag.get_text()
-        else:
-            author_telephone = None
+            author_telephone_tag = str(author_telephone_tag)
 
         author_role_tag = body.find("span", {"class": "role"})
         if author_role_tag is not None:
-            self.utils.zap_tag_contents(author_role_tag)
-            author_role = author_role_tag.get_text()
-        else:
-            author_role = None
+            author_role_tag = str(author_role_tag)
 
-        return author, author_role, author_telephone
-
-    def categorize_author(self, author):
-        """
-        Checks if the given author is one of the current ucsc news writers.  If they are, author is returned as
-        author, and an empty string is return as article_author.  If they are not, Public Information Office is returned
-        as author and the given author is returned as article_author
-        :param author:
-        :return:
-        """
-        if author.lower() in self.author_whitelist:
-            return self.author_whitelist[author.lower()], None
-        else:
-            return 'Public Information Office', author
+        return author_tag, author_role_tag, author_telephone_tag
 
     def get_campus_message_info(self, body):
         """
@@ -377,19 +333,15 @@ class ArticleScraper(object):
         :param body:
         :return:
         """
-        raw_message_from = body.find("span", {"class": "message-from"})
-        if raw_message_from is not None:
-            message_from = self.gremlin_zapper.zap_string(raw_message_from.get_text())
-        else:
-            message_from = None
+        message_from_tag = body.find("span", {"class": "message-from"})
+        if message_from_tag is not None:
+            message_from_tag = str(message_from_tag)
 
-        raw_message_to = body.find("span", {"class": "message-to"})
-        if raw_message_to is not None:
-            message_to = self.gremlin_zapper.zap_string(raw_message_to.get_text())
-        else:
-            message_to = None
+        message_to_tag = body.find("span", {"class": "message-to"})
+        if message_to_tag is not None:
+            message_to_tag = str(message_to_tag)
 
-        return message_from, message_to
+        return message_from_tag, message_to_tag
 
     def get_date(self, body):
         """
@@ -400,19 +352,7 @@ class ArticleScraper(object):
         """
         date_tag = body.find("p", {"class": "date"})
         if date_tag is not None:
-            date_string = date_tag.get_text()
-            matches = self.date_regex.findall(date_string)
-            if matches:
-                # Convert date from Month, Day Year to Year-Month-Day
-                try:
-                    raw_date = matches[0]
-                    raw_date = raw_date.rstrip()
-                    raw_date = raw_date.lstrip()
-                    return datetime.datetime.strptime(raw_date, "%B %d, %Y").strftime("%Y-%m-%d")
-                except ValueError:
-                    raise NoDateException()
-        else:
-            raise NoDateException()
+            date_tag = str(date_tag)
 
     def get_headers(self, body):
         """
@@ -422,19 +362,13 @@ class ArticleScraper(object):
         """
         title_tag = body.find("h1", {"id": "title"})
         if title_tag is not None:
-            raw_title = title_tag.get_text()
-            title = self.gremlin_zapper.zap_string(raw_title)
-        else:
-            title = None
+            title_tag = str(title_tag)
 
         subhead_tag = body.find("p", {"class": "subhead"})
         if subhead_tag is not None:
-            raw_subhead = subhead_tag.get_text()
-            subhead = self.gremlin_zapper.zap_string(raw_subhead)
-        else:
-            subhead = None
+            subhead_tag = str(subhead_tag)
 
-        return title, subhead
+        return title_tag, subhead_tag
 
     def get_images(self, article_url, body):
         """
@@ -456,52 +390,23 @@ class ArticleScraper(object):
                 image_src = urljoin(article_url, image_relative_src)
 
                 image_src = image_src.replace(' ', '%20')
-                # image_src = image_src.replace('_', '%5F')
-
-                image_id = str(self.get_next_index())
 
                 caption_tag = figure.find("figcaption", {"class": "caption"})
                 if caption_tag is not None:
-                    raw_caption = caption_tag.get_text()
-                    matches = self.word_regex.findall(raw_caption)
-                    image_caption = ' '.join(matches)
-                    image_caption = self.gremlin_zapper.zap_string(image_caption)
+                    image_caption = caption_tag
+                    self.utils.zap_tag_contents(image_caption)
                 else:
-                    image_caption = ''
+                    image_caption = None
 
-                image_width, image_height = self.utils.get_image_dimens(image_src)
                 if 'height' in image_tag:
                     image_height = image_tag['height']
                 if 'width' in image_tag:
                     image_width = image_tag['width']
 
                 images_dictionary[image_src] = {
-                    'image_caption': image_caption,
-                    'image_height': str(image_height),
-                    'image_width': str(image_width),
-                    'image_id': image_id
+                    'image_caption': str(image_caption),
+                    'image_tag': str(image_tag)
                 }
-
-        images = body.findAll("img")
-        if images is not None:
-            for image in images:
-                image_relative_src = image['src']
-                image_src = urljoin(article_url, image_relative_src)
-                image['src'] = image_src
-
-        iframes = body.findAll("iframe")
-        if iframes is not None:
-            for iframe in iframes:
-                iframe_relative_src = iframe['src']
-                iframe_src = urljoin(article_url, iframe_relative_src)
-                iframe['src'] = iframe_src
-
-        links = body.findAll("a")
-        if links is not None:
-            for link in links:
-                link_relative_src = link['href']
-                link_src = urljoin(article_url, link_relative_src)
-                link['href'] = link_src
 
         return images_dictionary
 
@@ -513,39 +418,14 @@ class ArticleScraper(object):
         """
         raw_article_body = body.find("div", {"class": "article-body"})
 
-        article_body_no_html = raw_article_body
-
-        if article_body_no_html is not None:
-            article_body_no_html = article_body_no_html.get_text()
-            article_body_no_html = self.gremlin_zapper.zap_string(article_body_no_html)
-
         if raw_article_body is not None:
-            self.utils.zap_tag_contents(raw_article_body)
             article_body = ''
             for item in raw_article_body.contents:
                 article_body += str(item)
         else:
-            article_body = ''
+            article_body = None
 
-        # article_body, errors = tidy_fragment(article_body, options={'numeric-entities': 1})
-
-        return article_body  # , article_body_no_html
-
-    def get_categories(self, page_html):
-        """
-        Gets the categories of the given news.ucsc.edu article page
-        :param page_html:
-        :return:
-        """
-        category_tags = page_html.findAll(attrs={"name": "category"})
-
-        categories = []
-
-        for category_tag in category_tags:
-            self.utils.zap_tag_contents(category_tag)
-            categories.append(category_tag['content'])
-
-        return categories
+        return article_body
 
     def scrape_article(self, article_url, no_html=False):
         """
@@ -553,51 +433,61 @@ class ArticleScraper(object):
         :param article_url:
         :return:
         """
-        soup = self.utils.get_soup_from_url(article_url)
 
-        categories = self.get_categories(soup)
+        soup = self.utils.get_soup_from_url(article_url)
 
         body = soup.find("div", {"id": "main"})
 
-        author, article_author_title, article_author_telephone = self.get_author_info(body)
+        self.utils.zap_tag_contents(body)
 
-        author, article_author,  = self.categorize_author(author)
+        self.utils.convert_urls(body, article_url)
+
+        inline_body_string = self.utils.add_inline_ucsc_css(str(body))
+
+        inline_body_soup = BeautifulSoup(inline_body_string, 'lxml')
+
+        body = inline_body_soup.find("div", {"id": "main"})
+
+        author, article_author_title, article_author_telephone = self.get_author_info(body)
 
         date = self.get_date(body)
 
         title, subhead = self.get_headers(body)
 
-        # images_dictionary = dict()
-
         images_dictionary = self.get_images(article_url, body)
 
         message_from, message_to = self.get_campus_message_info(body)
 
-        slug = self.utils.get_url_slug(article_url)
+        article_body = self.get_article_text(body)
 
-        source_permalink = "<p><a href=\"" + article_url + "\" title=\"Permalink to " + slug + "\">Source</a></p>"
+        content_string = ''
 
-        file_name = date + '-' + slug + ".md"
+        if subhead  is not None:
+            content_string += subhead
 
-        article_body, article_body_no_html = self.get_article_text(body)
+        if date is not None:
+            content_string += date
+
+        if author is not None:
+            content_string += author
+
+        if article_author_title is not None:
+            content_string += article_author_title
+
+        if article_author_telephone is not None:
+            content_string += article_author_telephone
+
+        if message_from is not None and message_to is not None:
+            content_string += message_from
+            content_string += message_to
+
+        if article_body is not None:
+            content_string += article_body
 
         return {
-            'file_name': file_name,
-            'source_permalink': source_permalink,
-            'author': author,
-            'article_author': article_author,
-            'article_author_title': article_author_title,
-            'article_author_telephone': article_author_telephone,
-            'categories': categories,
-            'message_from': message_from,
-            'message_to': message_to,
-            'date': date,
             'title': title,
-            'subhead': subhead,
-            'images_dictionary': images_dictionary,
-            'article_body': article_body,
-            'article_body_no_html': article_body_no_html,
-            'post_id': str(self.get_next_index())
+            'content': content_string,
+            'banner_image': None,
         }
 
     def scrape_articles(self, article_list, screen=None):

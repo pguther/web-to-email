@@ -1,2 +1,1 @@
-WTF_CSRF_ENABLED = True
-SECRET_KEY = 'thepassword'
+WTF_CSRF_ENABLED = False
