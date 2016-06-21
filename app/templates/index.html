@@ -7,6 +7,9 @@
             <p>
                 Please enter the URL of the page:<br>
                 {{ form.url(size=80) }}<br>
+                {% for error in form.url.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}<br>
             </p>
             <p><input type="submit" value="Get Email Format HTML"></p>
         </form>

@@ -264,6 +264,9 @@ class PageScraper(object):
         # print '================================================='
         # print str(body)
 
+        if body is None:
+            raise BodyIsNoneException
+
         self.utils.zap_tag_contents(body)
 
         inline_body_string = self.add_inline_ucsc_css(str(body))
