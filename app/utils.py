@@ -9,6 +9,7 @@ from unidecode import unidecode
 from PIL import Image
 import datetime
 from premailer import Premailer
+import pprint
 
 
 class ContentNotHTMLException(Exception):
@@ -165,17 +166,26 @@ class PageScraper(object):
         :param body:
         :return:
         """
-        content_tag = body.find("div", {"class": "content contentBox"})
-        if content_tag is not None:
-            self.utils.zap_tag_contents(content_tag)
-        else:
-            content_tag = body.find("div", {"class": "contentBox content-box"})
-            if content_tag is not None:
-                self.utils.zap_tag_contents(content_tag)
-        content_tag_string = ''
+        valid_content_classes = ['content contentBox', 'contentBox content-box', 'contentBox']
 
-        for item in content_tag.contents:
-            content_tag_string += str(item)
+        pp = pprint.PrettyPrinter(indent=4)
+
+        content_tags = []
+
+        for content_class in valid_content_classes:
+            print content_class
+            content_tags = body.find_all("div", {"class": content_class})
+            if len(content_tags) > 0:
+                break
+
+        if content_tags is None:
+            return
+
+        content_tag_string = ''
+        # pp.pprint(content_tag)
+        for content_tag in content_tags:
+            for item in content_tag.contents:
+                content_tag_string += str(item)
 
         return content_tag_string
 
@@ -251,12 +261,17 @@ class PageScraper(object):
         soup = self.utils.get_soup_from_url(page_url)
 
         body = soup.find("div", {"id": "main"})
+        # print '================================================='
+        # print str(body)
 
         self.utils.zap_tag_contents(body)
 
         inline_body_string = self.add_inline_ucsc_css(str(body))
 
         inline_body_soup = BeautifulSoup(inline_body_string, 'lxml')
+
+        # print '================================================='
+        # print str(inline_body_soup)
 
         body = inline_body_soup.find("div", {"id": "main"})
 
@@ -265,6 +280,9 @@ class PageScraper(object):
         title = self.get_title(body)
 
         content = self.get_content(body)
+
+        print '================================================='
+        print content
 
         banner_image = self.get_banner_image(body)
 

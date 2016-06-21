@@ -1,16 +1,7 @@
 from premailer import Premailer
 from bs4 import BeautifulSoup
+from app.utils import PageScraper
 
-premailer = Premailer(html="<p>Welcome to the Graduate Program, Department of History at the University of California, Santa Cruz.</p>",
-                      external_styles=['app/static/ucsc.css',])
+scraper = PageScraper()
 
-output = premailer.transform()
-
-soup = BeautifulSoup(output, 'lxml')
-
-body_contents = ''
-
-for item in soup.body.contents:
-    body_contents += str(item)
-print "==========================================================="
-print body_contents
+scraper.scrape_page('http://www.ucsc.edu/research/research-news.html')
