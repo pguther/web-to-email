@@ -173,7 +173,6 @@ class PageScraper(object):
         content_tags = []
 
         for content_class in valid_content_classes:
-            print content_class
             content_tags = body.find_all("div", {"class": content_class})
             if len(content_tags) > 0:
                 break

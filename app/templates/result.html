@@ -8,6 +8,7 @@
     <title>Welcome to web to email converter</title>
     {% endif %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
     <link rel="stylesheet" href="/static/style.css">
     <script>
         var code = 0;
@@ -32,6 +33,9 @@
             if(code == 0){
                 var resultDiv = $( "#result" );
                 var resultHtml = resultDiv.html();
+                var copyToClipboard = $('<button class="button" id="copy-button" \
+                                        data-clipboard-target="#textcode">Copy To Clipboard</button>');
+
                 resultDiv.empty();
 
                 var textArea = $('<textarea id="textcode"></textarea>');
@@ -39,6 +43,8 @@
                 textArea.html(resultHtml);
 
                 resultDiv.append(textArea);
+                resultDiv.append(copyToClipboard);
+                new Clipboard('#copy-button');
                 code = 1;
             } else {
                 var textcode = $( "#textcode" ).text();
@@ -62,7 +68,7 @@
     </div>
 
     <hr>
-    <div id="result">
+    <div id="result" align="center">
 
         <table width="600" cellspacing="0" cellpadding="0" border="0" align="center">
             <tr>
