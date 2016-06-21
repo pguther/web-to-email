@@ -1,11 +1,9 @@
 from premailer import Premailer
 from bs4 import BeautifulSoup
-from app.utils import PageScraper, ArticleScraper
+from app.utils import scrape_level3_page
 import pprint
 
-scraper = ArticleScraper()
-
-article_dictionary = scraper.scrape_article('http://news.ucsc.edu/2016/06/archivist.html')
+article_dictionary = scrape_level3_page('http://history.ucsc.edu/graduate/index.html')
 
 pp = pprint.PrettyPrinter(indent=4)
 

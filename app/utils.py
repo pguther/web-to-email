@@ -10,6 +10,18 @@ from PIL import Image
 import datetime
 from premailer import Premailer
 import pprint
+import tldextract
+
+
+def scrape_level3_page(url):
+
+    scraper = PageScraper()
+
+    ext = tldextract.extract(url)
+    if ext.subdomain == 'news':
+        scraper = ArticleScraper()
+
+    return scraper.scrape(url)
 
 
 class ContentNotHTMLException(Exception):
@@ -250,7 +262,7 @@ class PageScraper(object):
 
         return banner_image
 
-    def scrape_page(self, page_url):
+    def scrape(self, page_url):
         """
 
         :param page_url:
@@ -409,7 +421,7 @@ class ArticleScraper(object):
 
         return article_body
 
-    def scrape_article(self, article_url, no_html=False):
+    def scrape(self, article_url, no_html=False):
         """
 
         :param article_url:
@@ -496,7 +508,7 @@ class ArticleScraper(object):
                 current_url_num += 1
 
             try:
-                article_info = self.scrape_article(article)
+                article_info = self.scrape(article)
 
                 articles_dictionary[article] = article_info
 
