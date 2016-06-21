@@ -354,6 +354,8 @@ class ArticleScraper(object):
         if date_tag is not None:
             date_tag = str(date_tag)
 
+        return date_tag
+
     def get_headers(self, body):
         """
         returns title and subhead of news.ucsc.edu article
@@ -382,33 +384,13 @@ class ArticleScraper(object):
 
         figures = body.findAll("figure", {"class": "article-image"})
 
-        for figure in figures:
+        figures_string = ''
 
-            image_tag = figure.find("img")
-            if image_tag is not None:
-                image_relative_src = image_tag['src']
-                image_src = urljoin(article_url, image_relative_src)
+        if len(figures) > 0:
+            for figure in figures:
+                figures_string += (str(figure))
 
-                image_src = image_src.replace(' ', '%20')
-
-                caption_tag = figure.find("figcaption", {"class": "caption"})
-                if caption_tag is not None:
-                    image_caption = caption_tag
-                    self.utils.zap_tag_contents(image_caption)
-                else:
-                    image_caption = None
-
-                if 'height' in image_tag:
-                    image_height = image_tag['height']
-                if 'width' in image_tag:
-                    image_width = image_tag['width']
-
-                images_dictionary[image_src] = {
-                    'image_caption': str(image_caption),
-                    'image_tag': str(image_tag)
-                }
-
-        return images_dictionary
+        return figures_string
 
     def get_article_text(self, body):
         """
@@ -454,7 +436,7 @@ class ArticleScraper(object):
 
         title, subhead = self.get_headers(body)
 
-        images_dictionary = self.get_images(article_url, body)
+        figures = self.get_images(article_url, body)
 
         message_from, message_to = self.get_campus_message_info(body)
 
@@ -462,8 +444,10 @@ class ArticleScraper(object):
 
         content_string = ''
 
-        if subhead  is not None:
+        if subhead is not None:
             content_string += subhead
+
+        content_string += figures
 
         if date is not None:
             content_string += date

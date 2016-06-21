@@ -20,8 +20,10 @@ def index():
             return render_template('result.html', banner_image=article_dictionary['banner_image'],
                                    title=article_dictionary['title'],
                                    content=article_dictionary['content'])
-        return render_template('index.html',
-                               form=form)
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(error)
+        return redirect(url_for('index'))
     else:
         if form.validate_on_submit():
             # flash('Page Conversion requested for URL="%s"' % form.url.data)
@@ -32,7 +34,6 @@ def index():
             return render_template('result.html', banner_image=article_dictionary['banner_image'],
                                    title=article_dictionary['title'],
                                    content=article_dictionary['content'])
-
         return render_template('index.html',
                                form=form)
 
