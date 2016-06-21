@@ -168,7 +168,7 @@ class PageScraper(object):
         """
         valid_content_classes = ['content contentBox', 'contentBox content-box', 'contentBox']
 
-        pp = pprint.PrettyPrinter(indent=4)
+        # pp = pprint.PrettyPrinter(indent=4)
 
         content_tags = []
 
@@ -281,8 +281,8 @@ class PageScraper(object):
 
         content = self.get_content(body)
 
-        print '================================================='
-        print content
+        # print '================================================='
+        # print content
 
         banner_image = self.get_banner_image(body)
 
