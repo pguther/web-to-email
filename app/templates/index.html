@@ -9,7 +9,14 @@
                 {% for error in form.url.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}<br>
-            </p>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <span style="color: red;">{{ message }} </span>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                </p>
             <p><input type="submit" value="Get Email Format HTML"></p>
         </form>
     </div>

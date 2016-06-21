@@ -13,17 +13,6 @@
 <body>
     <div align="center">Web to Email: <a href="/">Home</a></div>
     <hr>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div align="center">
-          <ul>
-        {% for message in messages %}
-          <li>{{ message }} </li>
-        {% endfor %}
-        </ul>
-        </div>
-      {% endif %}
-    {% endwith %}
     {% block content %}{% endblock %}
 </body>
 </html>
