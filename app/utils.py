@@ -391,6 +391,7 @@ class ArticleScraper(object):
         if len(figures) > 0:
             for figure in figures:
                 figure.attrs['width'] = '300px'
+                figure.attrs['align'] = 'right'
                 figures_string += (str(figure))
 
         return figures_string
