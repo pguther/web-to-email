@@ -1,4 +1,4 @@
-from urlparse import urljoin
+from urlparse import urljoin, urlparse
 import bs4
 import requests
 from bs4 import BeautifulSoup
@@ -16,12 +16,22 @@ import tldextract
 def scrape_level3_page(url):
 
     scraper = PageScraper()
+    template = 'standard_result.html'
+    newsday_regex = re.compile(r"^\/tuesday-newsday\/.+")
 
     ext = tldextract.extract(url)
     if ext.subdomain == 'news':
-        scraper = ArticleScraper()
 
-    return scraper.scrape(url)
+        parse_result = urlparse(url)
+        path = parse_result.path
+
+        if newsday_regex.match(path):
+            scraper = TuesdayNewsdayScraper()
+            template = 'tuesday_newsday_result.html'
+        else:
+            scraper = ArticleScraper()
+
+    return scraper.scrape(url), template
 
 
 class ContentNotHTMLException(Exception):
@@ -136,26 +146,33 @@ class ArticleUtils:
         :param body:
         :return:
         """
-        images = body.findAll("img")
+        images = body.find_all("img")
         if images is not None:
             for image in images:
-                image_relative_src = image['src']
+                image_relative_src = image.attrs['src']
                 image_src = urljoin(page_url, image_relative_src)
-                image['src'] = image_src
+                image.attrs['src'] = image_src
 
-        iframes = body.findAll("iframe")
+        iframes = body.find_all("iframe")
         if iframes is not None:
             for iframe in iframes:
-                iframe_relative_src = iframe['src']
+                iframe_relative_src = iframe.attrs['src']
                 iframe_src = urljoin(page_url, iframe_relative_src)
-                iframe['src'] = iframe_src
+                iframe.attrs['src'] = iframe_src
 
-        links = body.findAll("a")
+        a_tags = body.find_all("a")
+        if a_tags is not None:
+            for a_tag in a_tags:
+                a_tag_relative_src = a_tag.attrs['href']
+                a_tag_src = urljoin(page_url, a_tag_relative_src)
+                a_tag.attrs['href'] = a_tag_src
+
+        links = body.find_all("link")
         if links is not None:
             for link in links:
-                link_relative_src = link['href']
+                link_relative_src = link.attrs['href']
                 link_src = urljoin(page_url, link_relative_src)
-                link['href'] = link_src
+                link.attrs['href'] = link_src
 
     def add_inline_ucsc_css(self, tag_text):
         """
@@ -197,6 +214,43 @@ class ArticleUtils:
                     tag.contents[x].replace_with(unicode_entry)
                 elif isinstance(tag.contents[x], bs4.element.Tag):
                     self.zap_tag_contents(tag.contents[x])
+
+
+class TuesdayNewsdayScraper(object):
+    """
+    scrapes a tuesday newsday page
+    """
+    def __init__(self, start_index=0):
+        """
+        Initializes the index counter for parsed objects to start_index or 0 if none is given
+        :return:
+        """
+        self.gremlin_zapper = GremlinZapper()
+        self.utils = ArticleUtils()
+
+    def scrape(self, url):
+        """
+
+        :param url:
+        :return:
+        """
+        soup = self.utils.get_soup_from_url(url)
+
+        self.utils.zap_tag_contents(soup)
+
+        self.utils.convert_urls(soup, url)
+
+        # print str(soup)
+
+        premailer = Premailer(html=str(soup))
+
+        output = premailer.transform()
+
+        inline_body_soup = BeautifulSoup(output, 'lxml')
+
+        table = inline_body_soup.find("table", {"class": "wrap"})
+
+        return {'content': str(table)}
 
 
 class PageScraper(object):

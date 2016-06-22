@@ -1,0 +1,6 @@
+{% extends "result_base.html" %}
+{% block content %}
+    {% if content %}
+        {{ content | safe }}
+    {% endif %}
+{% endblock %}

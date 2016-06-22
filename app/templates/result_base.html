@@ -67,28 +67,7 @@
 
     <hr>
     <div id="result" align="center">
-
-        <table width="600" cellspacing="0" cellpadding="0" border="0" align="center" id="emailTable">
-            <tr>
-                <td>
-                    {% if banner_image %}
-                    {{ banner_image | safe }}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    {% if title %}
-                    {{ title | safe }}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    {{ content | safe }}
-                </td>
-            </tr>
-        </table>
+        {% block content %}{% endblock %}
     </div>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

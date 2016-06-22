@@ -2,6 +2,7 @@ from wtforms import ValidationError
 import tldextract
 import requests
 from bs4 import BeautifulSoup
+import re
 
 
 class Level3Url(object):
@@ -10,6 +11,7 @@ class Level3Url(object):
     """
 
     def __call__(self, form, field):
+        newsday_regex = re.compile(r"^http:\/\/news.ucsc.edu\/tuesday-newsday\/.+")
         ext = tldextract.extract(field.data)
         if ext.domain != 'ucsc':
             raise ValidationError('URL must belong to a UCSC domain')
@@ -29,6 +31,9 @@ class Level3Url(object):
             for class_tag in body.attrs['class']:
                 if class_tag == 'left-column':
                     valid = True
+
+        if newsday_regex.match(field.data):
+            valid = True
 
         if not valid:
             raise ValidationError('URL is not a level 3 UCSC page')
