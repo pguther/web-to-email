@@ -1,23 +1,34 @@
-{% extends "base.html" %}
-{% block content %}
-    <div align="center">
-      <h1>Convert a Level 3 ucsc page to email format</h1>
-        <form action="" method="post" name="get_url">
-            <p>
-                Please enter the URL of the page:<br>
-                {{ form.url(size=80) }}<br>
-                {% for error in form.url.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}<br>
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <span style="color: red;">{{ message }} </span>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                </p>
-            <p><input type="submit" value="Get Email Format HTML"></p>
-        </form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web to Email</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <a href="/"><H1>Web to Email</H1></a>
+        </div>
+        <div id="form">
+            <form action="" method="post" name="get_url">
+                <p>
+                    <H2>URL to Convert</H2>
+                    {{ form.url(class_="query") }}<br>
+                    {% for error in form.url.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}<br>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <span>{{ message }} </span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    </p>
+                <p><input type="submit" value="Get Email Format HTML"></p>
+            </form>
+        </div>
     </div>
-{% endblock %}
+</body>
+</html>

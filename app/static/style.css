@@ -5,6 +5,70 @@ textarea {
     margin-left: auto;
     margin-right: auto;
 }
+
+
+
+.text-input {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 400px;
+    font-size: 16px;
+    heigh: auto;
+    padding: 21px 23px;
+    border: 2px solid white;
+    border-radius: 4px;
+    outline: 0px;
+}
+
+.query {
+    font-size:15px;
+    line-height:160%;
+    padding:4px 8px;
+    width:100%;
+    color:#84827c;
+    border:1px solid
+    #d3d2d1;
+    border-radius:5px
+}
+
+.text-input {
+
+    width: 400px;
+    font-size: 15px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+
+#main {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#header {
+    padding: 30px
+
+}
+
+#form {
+
+    position: relative;
+    top: 50px;
+
+}
+
+H1 {
+    color: #00448C;
+}
+
+H2 {
+    color: #00448C;
+}
+
 .toggle-button { background-color: white; margin: 5px 0; border-radius: 20px; border: 2px solid #D0D0D0; height: 24px; cursor: pointer; width: 50px; position: relative; display: inline-block; user-select: none; -webkit-user-select: none; -ms-user-select: none; -moz-user-select: none; }
 .toggle-button button { cursor: pointer; outline: 0; display:block; position: absolute; left: 0; top: 0; border-radius: 100%; width: 30px; height: 30px; background-color: white; float: left; margin: -3px 0 0 -3px; border: 2px solid #D0D0D0; transition: left 0.3s; }
 .toggle-button-selected { background-color: #83B152; border: 2px solid #7DA652; }

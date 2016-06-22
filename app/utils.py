@@ -325,19 +325,11 @@ class ArticleScraper(object):
         :param body: the BeautifulSoup object representing the news.ucsc.edu article body
         :return: author, author_role, author_telephone: of the news.ucsc.edu article
         """
-        author_tag = body.find("span", {"class": "name"})
+        author_tag = body.find("p", {"class": "vcard"})
         if author_tag is not None:
             author_tag = str(author_tag)
 
-        author_telephone_tag = body.find("span", {"class": "tel"})
-        if author_telephone_tag is not None:
-            author_telephone_tag = str(author_telephone_tag)
-
-        author_role_tag = body.find("span", {"class": "role"})
-        if author_role_tag is not None:
-            author_role_tag = str(author_role_tag)
-
-        return author_tag, author_role_tag, author_telephone_tag
+        return author_tag
 
     def get_campus_message_info(self, body):
         """
@@ -345,15 +337,15 @@ class ArticleScraper(object):
         :param body:
         :return:
         """
-        message_from_tag = body.find("span", {"class": "message-from"})
-        if message_from_tag is not None:
-            message_from_tag = str(message_from_tag)
+        message_tag = body.find("div", {"class": "campus-message"})
+        if message_tag is not None:
+            message_string = ''
+            for item in message_tag.contents:
+                message_string += str(item)
+        else:
+            message_string = None
 
-        message_to_tag = body.find("span", {"class": "message-to"})
-        if message_to_tag is not None:
-            message_to_tag = str(message_to_tag)
-
-        return message_from_tag, message_to_tag
+        return message_string
 
     def get_date(self, body):
         """
@@ -392,14 +384,13 @@ class ArticleScraper(object):
         :return:
         """
 
-        images_dictionary = dict()
-
         figures = body.findAll("figure", {"class": "article-image"})
 
         figures_string = ''
 
         if len(figures) > 0:
             for figure in figures:
+                figure.attrs['width'] = '300px'
                 figures_string += (str(figure))
 
         return figures_string
@@ -442,15 +433,16 @@ class ArticleScraper(object):
 
         body = inline_body_soup.find("div", {"id": "main"})
 
-        author, article_author_title, article_author_telephone = self.get_author_info(body)
+        author = self.get_author_info(body)
 
         date = self.get_date(body)
 
         title, subhead = self.get_headers(body)
 
+        # banner, \
         figures = self.get_images(article_url, body)
 
-        message_from, message_to = self.get_campus_message_info(body)
+        message = self.get_campus_message_info(body)
 
         article_body = self.get_article_text(body)
 
@@ -461,21 +453,14 @@ class ArticleScraper(object):
 
         content_string += figures
 
+        if message is not None:
+            content_string += message
+
         if date is not None:
             content_string += date
 
         if author is not None:
             content_string += author
-
-        if article_author_title is not None:
-            content_string += article_author_title
-
-        if article_author_telephone is not None:
-            content_string += article_author_telephone
-
-        if message_from is not None and message_to is not None:
-            content_string += message_from
-            content_string += message_to
 
         if article_body is not None:
             content_string += article_body
