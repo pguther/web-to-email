@@ -31,7 +31,7 @@ def index():
             return render_template(template, banner_image=banner_image,
                                    title=title,
                                    content=content)
-        
+
         for field, errors in form.errors.items():
             for error in errors:
                 flash(error)
@@ -59,6 +59,12 @@ def index():
             return render_template(template, banner_image=banner_image,
                                    title=title,
                                    content=content)
+        flash_errors(form)
         return render_template('index.html',
-                               form=form)
+                               form=URLForm())
 
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(error)

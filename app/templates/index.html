@@ -21,7 +21,8 @@
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
                             {% for message in messages %}
-                                <span>{{ message }} </span>
+                                <span class="flashed-message" style="color: red;">{{ message }} </span>
+                                <br>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
