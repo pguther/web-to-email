@@ -1,10 +1,7 @@
 #!flask/bin/python
-import os
 import unittest
 from app import app
-import requests
 from bs4 import BeautifulSoup
-from app.forms import URLForm
 
 
 class TestCase(unittest.TestCase):

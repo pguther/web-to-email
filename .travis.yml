@@ -1,6 +1,6 @@
 language: python
 install: pip install -r requirements.txt
-script: python tests.py
+script: nosetests tests.py app/tests.py
 deploy:
   provider: heroku
   api_key:

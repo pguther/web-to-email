@@ -72,58 +72,6 @@ class ArticleUtils:
         self.article_slug_regex = re.compile(r".*\/([^\/\.]+)(?:.[^\.\/]+$)*")
         self.article_ending_regex = re.compile(r".*\/([^\/]+)")
 
-    def get_nicename(self, name):
-        """
-        Returns the nicename version of a string; converts to lowercase and replaces
-        spaces with dashes
-        :param name:
-        :return:
-        """
-        name = name.replace(' ', '-')
-        name = name.lower()
-
-        return name
-
-    def get_url_slug(self, page_url):
-        """
-        Returns the last section of a url eg. 'posts' for 'wordpress.com/posts.html'
-        :raises Exception: if the regex is unable to locate the url slug
-        :param page_url: the page url
-        :return: the url slug
-        """
-        slug_match = self.article_slug_regex.findall(page_url)
-        if slug_match and len(slug_match) == 1:
-            return slug_match[0]
-        else:
-            raise Exception("unable to find slug for article: " + page_url + "\n")
-
-    def get_url_ending(self, page_url):
-        """
-        Gets the url slug plus the file ending eg:
-        www.example.com/example.html -> example.html
-        :param page_url: the url to get the ending from
-        :return: the url ending
-        """
-        slug_match = self.article_ending_regex.findall(page_url)
-        if slug_match and len(slug_match) == 1:
-            return slug_match[0]
-        else:
-            raise Exception("unable to find ending for article: " + page_url + "\n")
-
-    def get_image_dimens(self, image_url):
-        """
-        Uses the PIL Pillow fork to get the width and height of an image from a url
-        :param image_url: the url of the image to get the dimensions for
-        :return: height, width
-        """
-        try:
-            url_connection = urllib.urlopen(image_url)
-            image_file = cStringIO.StringIO(url_connection.read())
-            im = Image.open(image_file)
-            return im.size
-        except IOError as e:
-            raise ImageException(image_url)
-
     def get_soup_from_url(self, page_url):
         """
         Takes the url of a web page and returns a BeautifulSoup Soup object representation
@@ -272,7 +220,12 @@ class PageScraper(object):
         :param body:
         :return:
         """
-        return str(body.find("h1", {"id": "title"}))
+        title_tag = body.find("h1", {"id": "title"})
+        if title_tag is not None:
+            title = str(title_tag)
+        else:
+            title = None
+        return title
 
     def get_content(self, body):
         """
@@ -291,11 +244,10 @@ class PageScraper(object):
             if len(content_tags) > 0:
                 break
 
-        if content_tags is None:
-            return
+        if len(content_tags) == 0:
+            return None
 
         content_tag_string = ''
-        # pp.pprint(content_tag)
         for content_tag in content_tags:
             for item in content_tag.contents:
                 content_tag_string += str(item)
@@ -310,7 +262,11 @@ class PageScraper(object):
         """
         banner_box = body.find("div", {"id": "bannerBox"})
         if banner_box is not None:
-            banner_image = str(banner_box.find("img", {"id": "banner"}))
+            banner_image_tag = banner_box.find("img", {"id": "banner"})
+            if banner_image_tag is not None:
+                banner_image = str(banner_image_tag)
+            else:
+                banner_image = None
         else:
             banner_image = None
 
@@ -353,25 +309,16 @@ class ArticleScraper(object):
     by jekyll to create a wordpress import file.  Also creates a file of statistics on the scrapeability
     the articles
     """
-    def __init__(self, start_index=0):
+    def __init__(self):
         """
         Initializes the index counter for parsed objects to start_index or 0 if none is given
         :return:
         """
         self.gremlin_zapper = GremlinZapper()
         self.utils = ArticleUtils()
-        self.object_index = start_index
         self.date_regex = re.compile(r"[A-Za-z]+\s*\d{1,2}\,\s*\d{4}")
         self.word_regex = re.compile(r"([^\s\n\r\t]+)")
         self.author_regex = re.compile(r"By\s*(.+)")
-
-    def get_next_index(self):
-        """
-        Used as a counter to give each item (posts, images, and videos) a unique ID
-        :return: the next unique id
-        """
-        self.object_index += 1
-        return self.object_index
 
     def get_author_info(self, body):
         """
@@ -430,15 +377,14 @@ class ArticleScraper(object):
 
         return title_tag, subhead_tag
 
-    def get_images(self, article_url, body):
+    def get_images(self, body):
         """
         Creates a dictionary of dictionaries of information about images in the article
-        :param article_url
         :param body:
         :return:
         """
 
-        figures = body.findAll("figure", {"class": "article-image"})
+        figures = body.find_all("figure", {"class": "article-image"})
 
         figures_string = ''
 
@@ -447,6 +393,8 @@ class ArticleScraper(object):
                 figure.attrs['width'] = '300px'
                 figure.attrs['align'] = 'right'
                 figures_string += (str(figure))
+        else:
+            figures_string = None
 
         return figures_string
 
@@ -495,7 +443,7 @@ class ArticleScraper(object):
         title, subhead = self.get_headers(body)
 
         # banner, \
-        figures = self.get_images(article_url, body)
+        figures = self.get_images(body)
 
         message = self.get_campus_message_info(body)
 
@@ -506,7 +454,8 @@ class ArticleScraper(object):
         if subhead is not None:
             content_string += subhead
 
-        content_string += figures
+        if figures is not None:
+            content_string += figures
 
         if message is not None:
             content_string += message
@@ -525,40 +474,6 @@ class ArticleScraper(object):
             'content': content_string,
             'banner_image': None,
         }
-
-    def scrape_articles(self, article_list, screen=None):
-        """
-        Scrapes the urls in article_list and writes the resulting articles
-        :param article_list: The list of article URLs to scrape
-        :param screen: the CommandLineDisplay object to update the progress of the scraper with
-        :return:
-        """
-        num_urls = len(article_list)
-        current_url_num = 1
-        prog_percent = 0
-
-        unscrapeable_article_dict = dict()
-
-        articles_dictionary = dict()
-
-        for article in article_list:
-            if screen is not None:
-                screen.report_progress('Scraping Articles', 'Scraping Article', article, prog_percent)
-                prog_percent = int(((current_url_num + 0.0) / num_urls) * 100)
-                current_url_num += 1
-
-            try:
-                article_info = self.scrape(article)
-
-                articles_dictionary[article] = article_info
-
-            except Exception as e:
-                unscrapeable_article_dict[article] = str(e)
-                # screen.end_session()
-                # print e
-                # exit()
-
-        return articles_dictionary, unscrapeable_article_dict
 
 
 class GremlinZapper(object):
