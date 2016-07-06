@@ -37,31 +37,6 @@ def index():
                 flash(error)
         return redirect(url_for('index'))
     else:
-        """
-        if form.validate_on_submit():
-            url = request.form['url']
-            article_dictionary, template = scrape_level3_page(url)
-
-            if 'banner_image' in article_dictionary:
-                banner_image = article_dictionary['banner_image']
-            else:
-                banner_image = None
-
-            if 'title' in article_dictionary:
-                title = article_dictionary['title']
-            else:
-                title = None
-
-            if 'content' in article_dictionary:
-                content = article_dictionary['content']
-            else:
-                content = None
-
-            return render_template(template, banner_image=banner_image,
-                                   title=title,
-                                   content=content)
-        flash_errors(form)
-        """
         return render_template('index.html',
                                form=URLForm())
 

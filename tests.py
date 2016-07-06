@@ -36,7 +36,7 @@ class TestCase(unittest.TestCase):
         self.news_url = 'http://news.ucsc.edu/2016/06/archivist.html'
         self.tuesday_newsday_url = 'http://news.ucsc.edu/tuesday-newsday/2016/june-21/index.html'
 
-    def test_get_non_url(self):
+    def test_urlquery_non_url(self):
         """
         test entering something that isn't a valid url
         :return:
@@ -47,7 +47,7 @@ class TestCase(unittest.TestCase):
         assert error_messages[0] == 'Invalid URL. '
         assert error_messages[1] == 'Invalid URL \'ucsc\': No schema supplied. Perhaps you meant http://ucsc? '
 
-    def test_get_non_domain(self):
+    def test_urlquery_non_domain(self):
         """
         test entering a url that doesn't belong to a ucsc domain
         :return:
@@ -57,7 +57,7 @@ class TestCase(unittest.TestCase):
         assert len(error_messages) == 1
         assert error_messages[0] == 'URL must belong to a UCSC domain '
 
-    def test_get_non_level_3(self):
+    def test_urlquery_non_level_3(self):
         """
         test entering a url that isn't a level 3 page, a news article, or a tuesday newsday archive
         :return:
@@ -67,7 +67,7 @@ class TestCase(unittest.TestCase):
         assert len(error_messages) == 1
         assert error_messages[0] == 'URL is not a level 3 UCSC page '
 
-    def test_get_level_3(self):
+    def test_urlquery_level_3(self):
         """
         test a level 3 page
         :return:
@@ -89,7 +89,7 @@ class TestCase(unittest.TestCase):
         title = email_table.find('h1', {'id': 'title'})
         assert title is not None
 
-    def test_get_news_article(self):
+    def test_urlquery_news_article(self):
         """
         test a news article
         :return:
@@ -111,7 +111,7 @@ class TestCase(unittest.TestCase):
         title = email_table.find('h1', {'id': 'title'})
         assert title is not None
 
-    def test_get_tuesday_newsday(self):
+    def test_urlquery_tuesday_newsday(self):
         """
         test a tuesday newsday archive
         :return:
@@ -127,109 +127,6 @@ class TestCase(unittest.TestCase):
         email_table = result_div.find('table', {'class': 'wrap', 'summary': 'Tuesday Newsday email main content'})
         assert email_table is not None
 
-
-    def test_post_non_url(self):
-        """
-        test entering something that isn't a valid url
-        :return:
-        """
-        rv = self.app.post('/', data={
-            'url': self.non_url
-        }, follow_redirects=True)
-        error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 2
-        assert error_messages[0] == 'Invalid URL. '
-        assert error_messages[1] == 'Invalid URL \'ucsc\': No schema supplied. Perhaps you meant http://ucsc? '
-
-    def test_post_non_domain(self):
-        """
-        test entering a url that doesn't belong to a ucsc domain
-        :return:
-        """
-        rv = self.app.post('/', data={
-            'url': self.non_ucsc_domain_url
-        }, follow_redirects=True)
-        error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 1
-        assert error_messages[0] == 'URL must belong to a UCSC domain '
-
-    def test_post_non_level_3(self):
-        """
-        test entering a url that isn't a level 3 page, a news article, or a tuesday newsday archive
-        :return:
-        """
-        rv = self.app.post('/', data={
-            'url': self.non_level_3_url
-        }, follow_redirects=True)
-        error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 1
-        assert error_messages[0] == 'URL is not a level 3 UCSC page '
-
-    def test_post_level_3(self):
-        """
-        test a level 3 page
-        :return:
-        """
-        rv = self.app.post('/', data={
-            'url': self.level_3_url
-        }, follow_redirects=True)
-        error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 0
-        soup = BeautifulSoup(rv.data, 'lxml')
-
-        result_div = soup.find('div', {'id': 'result'})
-        assert result_div is not None
-
-        email_table = result_div.find('table', {'id': 'emailTable'})
-        assert email_table is not None
-
-        banner = email_table.find('img', {'id': 'banner'})
-        assert banner is not None
-
-        title = email_table.find('h1', {'id': 'title'})
-        assert title is not None
-
-    def test_post_news_article(self):
-        """
-        test a news article
-        :return:
-        """
-        rv = self.app.post('/', data={
-            'url': self.news_url
-        }, follow_redirects=True)
-        error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 0
-        soup = BeautifulSoup(rv.data, 'lxml')
-
-        result_div = soup.find('div', {'id': 'result'})
-        assert result_div is not None
-
-        email_table = result_div.find('table', {'id': 'emailTable'})
-        assert email_table is not None
-
-        banner = email_table.find('img', {'id': 'banner'})
-        assert banner is None
-
-        title = email_table.find('h1', {'id': 'title'})
-        assert title is not None
-
-    def test_post_tuesday_newsday(self):
-        """
-        test a tuesday newsday archive
-        :return:
-        """
-        rv = self.app.post('/', data={
-            'url': self.tuesday_newsday_url
-        }, follow_redirects=True)
-        error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 0
-        soup = BeautifulSoup(rv.data, 'lxml')
-
-        result_div = soup.find('div', {'id': 'result'})
-        assert result_div is not None
-
-        email_table = result_div.find('table', {'class': 'wrap', 'summary': 'Tuesday Newsday email main content'})
-        assert email_table is not None
 
 if __name__ == '__main__':
     unittest.main()
