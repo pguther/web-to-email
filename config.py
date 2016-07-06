@@ -1,4 +1,4 @@
 import os
 
 WTF_CSRF_ENABLED = False
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'testing_key')
