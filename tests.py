@@ -128,29 +128,6 @@ class TestCase(unittest.TestCase):
         assert email_table is not None
 
 
-
-    """
-    def test_page_post(self):
-        url = 'http://history.ucsc.edu/graduate/index.html'
-        url = 'http://news.ucsc.edu/'
-        rv = self.app.post('/', data={
-            'url': url
-        }, follow_redirects=True)
-
-        print rv.data
-
-        soup = BeautifulSoup(rv.data, 'lxml')
-
-        result_div = soup.find('div', {'id': 'result'})
-        assert result_div is not None
-
-        email_table = result_div.find('table', {'id': 'emailTable'})
-        assert email_table is not None
-
-        banner = email_table.find('img', {'id': 'banner'})
-        assert banner is not None
-    """
-
     def test_post_non_url(self):
         """
         test entering something that isn't a valid url

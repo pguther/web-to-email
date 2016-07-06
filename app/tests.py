@@ -476,5 +476,6 @@ class TestArticleScraper(unittest.TestCase):
 
         assert article_text is None
 
+
 if __name__ == '__main__':
     unittest.main()

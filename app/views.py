@@ -4,7 +4,7 @@ from forms import URLForm
 from utils import PageScraper, scrape_level3_page
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', ])
 def index():
     form = URLForm()
     if 'url' in request.args:
@@ -37,6 +37,7 @@ def index():
                 flash(error)
         return redirect(url_for('index'))
     else:
+        """
         if form.validate_on_submit():
             url = request.form['url']
             article_dictionary, template = scrape_level3_page(url)
@@ -60,6 +61,7 @@ def index():
                                    title=title,
                                    content=content)
         flash_errors(form)
+        """
         return render_template('index.html',
                                form=URLForm())
 
