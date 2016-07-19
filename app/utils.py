@@ -18,6 +18,7 @@ def scrape_level3_page(url):
     scraper = PageScraper()
     template = 'standard_result.html'
     newsday_regex = re.compile(r"^\/tuesday-newsday\/.+")
+    messaging_regex = re.compile(r"^http:\/\/messaging.ucsc.edu\/.+")
 
     ext = tldextract.extract(url)
     if ext.subdomain == 'news':
@@ -30,6 +31,9 @@ def scrape_level3_page(url):
             template = 'tuesday_newsday_result.html'
         else:
             scraper = ArticleScraper()
+
+    if ext.subdomain == 'messaging':
+        scraper = MessagingScraper()
 
     return scraper.scrape(url), template
 
@@ -199,6 +203,56 @@ class TuesdayNewsdayScraper(object):
         table = inline_body_soup.find("table", {"class": "wrap"})
 
         return {'content': str(table)}
+
+
+class MessagingScraper(object):
+    """
+    scrapes a tuesday newsday page
+    """
+    def __init__(self, start_index=0):
+        """
+        Initializes the index counter for parsed objects to start_index or 0 if none is given
+        :return:
+        """
+        self.gremlin_zapper = GremlinZapper()
+        self.utils = ArticleUtils()
+
+    def scrape(self, url):
+        """
+
+        :param url:
+        :return:
+        """
+        soup = self.utils.get_soup_from_url(url)
+
+        for element in soup(text=lambda text: isinstance(text, bs4.Comment)):
+            element.extract()
+
+        self.utils.zap_tag_contents(soup)
+
+        self.utils.convert_urls(soup, url)
+
+        # print str(soup)
+
+        premailer = Premailer(html=str(soup))
+
+        output = premailer.transform()
+
+        inline_body_soup = BeautifulSoup(output, 'lxml')
+
+        tables = inline_body_soup.findAll('table', {'align': 'center', 'summary': 'Email content'})
+
+        content_string = ''
+
+        if tables is not None:
+            for table in tables:
+                content_string += str(table)
+
+        body = inline_body_soup.find('body')
+
+        # print str(body)
+
+        return {'content': content_string}
 
 
 class PageScraper(object):

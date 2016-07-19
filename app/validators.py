@@ -12,6 +12,7 @@ class Level3Url(object):
 
     def __call__(self, form, field):
         newsday_regex = re.compile(r"^http:\/\/news.ucsc.edu\/tuesday-newsday\/.+")
+        messaging_regex = re.compile(r"^http:\/\/messaging.ucsc.edu\/.+")
         ext = tldextract.extract(field.data)
         if ext.domain != 'ucsc':
             raise ValidationError('URL must belong to a UCSC domain')
@@ -34,6 +35,11 @@ class Level3Url(object):
 
         if newsday_regex.match(field.data):
             valid = True
+
+        if messaging_regex.match(field.data):
+            tables = soup.findAll('table', {'align': 'center', 'summary': 'Email content'})
+            if tables is not None:
+                valid = True
 
         if not valid:
             raise ValidationError('URL is not a level 3 UCSC page')
