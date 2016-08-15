@@ -194,6 +194,13 @@ class MessagingScraper(object):
 
         if content_tag is not None:
             for content in content_tag.contents:
+
+                if isinstance(content, bs4.element.Tag):
+                    if 'class' in content.attrs:
+                        for class_name in content.attrs['class']:
+                            if class_name == 'ignore':
+                                continue
+
                 if isinstance(content, bs4.element.Comment):
                     content_string += '<!--' + str(content) + '-->'
                 else:
@@ -225,8 +232,6 @@ class TuesdayNewsdayScraper(object):
         self.utils.zap_tag_contents(soup)
 
         self.utils.convert_urls(soup, url)
-
-        # print str(soup)
 
         premailer = Premailer(html=str(soup))
 
