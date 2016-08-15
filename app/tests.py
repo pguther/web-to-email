@@ -20,7 +20,7 @@ class TestArticleUtils(unittest.TestCase):
         html = '<img src="/image.html"/> ' \
                '<a href="/index.html"/> ' \
                '<iframe src="/iframe.html"/> ' \
-               '<link href="/style.css"/>"'
+               '<link href="/resultStyle.css"/>"'
 
         url_base = "http://website.com/"
         url_ending = 'post.html'
@@ -47,7 +47,7 @@ class TestArticleUtils(unittest.TestCase):
         link = soup.find('link')
         assert link is not None
         assert 'href' in link.attrs
-        assert link.attrs['href'] == url_base + 'style.css'
+        assert link.attrs['href'] == url_base + 'resultStyle.css'
 
     def test_add_inline__ucsc_css(self):
         """

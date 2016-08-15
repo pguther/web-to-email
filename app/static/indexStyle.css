@@ -1,0 +1,36 @@
+#main {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#header {
+    padding: 30px
+
+}
+
+#form {
+
+    position: relative;
+    top: 50px;
+
+}
+
+H1 {
+    color: #00448C;
+}
+
+H2 {
+    color: #00448C;
+}
+
+.query {
+    font-size:15px;
+    line-height:160%;
+    padding:4px 8px;
+    width:100%;
+    color:#84827c;
+    border:1px solid
+    #d3d2d1;
+    border-radius:5px;
+}

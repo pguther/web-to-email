@@ -5,7 +5,7 @@
     <title>results</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/resultStyle.css">
     <script>
         var code = 0;
 
@@ -56,21 +56,39 @@
 
 </head>
 <body>
-    <div class="button-wrapper centered" align="center">
+    <div align="center">
         <a href="/"><H1>Web to Email</H1></a>
-        Content
-        <div class="toggle-button">
-            <button></button>
-        </div>
-        HTML Code
     </div>
 
     <hr>
-    <div id="result" align="center">
-        {% if content %}
-            {{ content | safe }}
-        {% endif %}
+
+    <div id="container">
+        <div id="errors">
+            <div id="error-list">
+            </div>
+        </div>
+        <div id="result-container" align="center">
+            <div id="toggle-container">
+                <div class="toggle-text">
+                    Content
+                </div>
+                <div class="toggle-button">
+                    <button></button>
+                </div>
+                <div class="toggle-text">
+                    HTML Code
+                </div>
+            </div>
+            <div id="result" align="center">
+                <div id="result-border">
+                    {% if content %}
+                        {{ content | safe }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
+
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
