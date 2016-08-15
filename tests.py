@@ -32,7 +32,7 @@ class TestCase(unittest.TestCase):
         self.non_url = "ucsc"
         self.non_ucsc_domain_url = 'http://google.com'
         self.non_messaging_ucsc_url = 'http://www.ucsc.edu'
-        self.messaging_url = 'http://messaging.ucsc.edu/testing/may/my-testing-email.html'
+        self.messaging_url = 'http://messaging.ucsc.edu/testing/may/admin-letter-test.html'
 
     def test_non_url(self):
         """
@@ -65,9 +65,9 @@ class TestCase(unittest.TestCase):
         assert len(error_messages) == 1
         assert error_messages[0] == 'URL is not a messaging.ucsc.edu post '
 
-    def test_urlquery_messaging(self):
+    def test_messaging(self):
         """
-        test a tuesday newsday archive
+        test a messaging.ucsc.edu post
         :return:
         """
         rv = self.app.get('/?url=' + self.messaging_url, follow_redirects=True)
@@ -78,7 +78,7 @@ class TestCase(unittest.TestCase):
         result_div = soup.find('div', {'id': 'result'})
         assert result_div is not None
 
-        email_table = result_div.find('table', {'align': 'center', 'summary': 'Email content'})
+        email_table = result_div.find('table', {'class': 'main'})
 
         assert email_table is not None
 

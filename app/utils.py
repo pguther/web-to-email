@@ -165,9 +165,6 @@ class MessagingScraper(object):
         """
         soup = self.utils.get_soup_from_url(url)
 
-        # for element in soup(text=lambda text: isinstance(text, bs4.Comment)):
-        #     element.extract()
-
         self.utils.zap_tag_contents(soup)
 
         self.utils.convert_urls(soup, url)
@@ -185,9 +182,6 @@ class MessagingScraper(object):
 
         body.append(content_div)
 
-        print "====================================================="
-        # print soup
-
         premailer = Premailer(html=str(soup))
 
         output = premailer.transform()
@@ -201,11 +195,9 @@ class MessagingScraper(object):
         if content_tag is not None:
             for content in content_tag.contents:
                 if isinstance(content, bs4.element.Comment):
-                    content_string += '<!--' + str(content) + '--!>'
+                    content_string += '<!--' + str(content) + '-->'
                 else:
                     content_string += str(content)
-
-        print content_string
 
         return {'content': content_string}
 
