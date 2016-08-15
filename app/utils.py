@@ -135,7 +135,9 @@ class ArticleUtils:
             gzapper = GremlinZapper()
 
             for x in range(0, content_length):
-                if isinstance(tag.contents[x], bs4.element.NavigableString):
+                if isinstance(tag.contents[x], bs4.element.Comment):
+                    self.zap_tag_contents(tag.contents[x])
+                elif isinstance(tag.contents[x], bs4.element.NavigableString):
                     unicode_entry = gzapper.kill_gremlins(tag.contents[x])
                     unicode_entry = unidecode(unicode_entry)
                     tag.contents[x].replace_with(unicode_entry)
@@ -163,14 +165,28 @@ class MessagingScraper(object):
         """
         soup = self.utils.get_soup_from_url(url)
 
-        for element in soup(text=lambda text: isinstance(text, bs4.Comment)):
-            element.extract()
+        # for element in soup(text=lambda text: isinstance(text, bs4.Comment)):
+        #     element.extract()
 
         self.utils.zap_tag_contents(soup)
 
         self.utils.convert_urls(soup, url)
 
-        # print str(soup)
+        # print str(soup.body)
+
+        body = soup.body
+
+        content_div = soup.new_tag('div')
+
+        content_div.attrs['class'] = 'content_div'
+
+        for content in reversed(body.contents):
+            content_div.insert(0, content.extract())
+
+        body.append(content_div)
+
+        print "====================================================="
+        # print soup
 
         premailer = Premailer(html=str(soup))
 
@@ -178,17 +194,18 @@ class MessagingScraper(object):
 
         inline_body_soup = BeautifulSoup(output, 'lxml')
 
-        tables = inline_body_soup.findAll('table', {'align': 'center', 'summary': 'Email content'})
+        content_tag = inline_body_soup.find('div', {'class': 'content_div'})
 
         content_string = ''
 
-        if tables is not None:
-            for table in tables:
-                content_string += str(table)
+        if content_tag is not None:
+            for content in content_tag.contents:
+                if isinstance(content, bs4.element.Comment):
+                    content_string += '<!--' + str(content) + '--!>'
+                else:
+                    content_string += str(content)
 
-        body = inline_body_soup.find('body')
-
-        # print str(body)
+        print content_string
 
         return {'content': content_string}
 
