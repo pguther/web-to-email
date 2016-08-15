@@ -5,13 +5,12 @@ from bs4 import BeautifulSoup
 import re
 
 
-class Level3Url(object):
+class MessagingURl(object):
     """
     Validates that a URL points at a level 3 UCSC content page
     """
 
     def __call__(self, form, field):
-        newsday_regex = re.compile(r"^http:\/\/news.ucsc.edu\/tuesday-newsday\/.+")
         messaging_regex = re.compile(r"^http:\/\/messaging.ucsc.edu\/.+")
         ext = tldextract.extract(field.data)
         if ext.domain != 'ucsc':
@@ -24,17 +23,7 @@ class Level3Url(object):
             raise ValidationError('Content not HTML')
         soup = BeautifulSoup(r.content, 'lxml')
 
-        body = soup.find("body")
-
         valid = False
-
-        if 'class' in body.attrs:
-            for class_tag in body.attrs['class']:
-                if class_tag == 'left-column':
-                    valid = True
-
-        if newsday_regex.match(field.data):
-            valid = True
 
         if messaging_regex.match(field.data):
             tables = soup.findAll('table', {'align': 'center', 'summary': 'Email content'})
@@ -42,4 +31,4 @@ class Level3Url(object):
                 valid = True
 
         if not valid:
-            raise ValidationError('URL is not a level 3 UCSC page')
+            raise ValidationError('URL is not a messaging.ucsc.edu post')

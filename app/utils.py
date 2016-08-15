@@ -15,25 +15,8 @@ import tldextract
 
 def scrape_level3_page(url):
 
-    scraper = PageScraper()
-    template = 'standard_result.html'
-    newsday_regex = re.compile(r"^\/tuesday-newsday\/.+")
-    messaging_regex = re.compile(r"^http:\/\/messaging.ucsc.edu\/.+")
-
-    ext = tldextract.extract(url)
-    if ext.subdomain == 'news':
-
-        parse_result = urlparse(url)
-        path = parse_result.path
-
-        if newsday_regex.match(path):
-            scraper = TuesdayNewsdayScraper()
-            template = 'tuesday_newsday_result.html'
-        else:
-            scraper = ArticleScraper()
-
-    if ext.subdomain == 'messaging':
-        scraper = MessagingScraper()
+    template = 'result.html'
+    scraper = MessagingScraper()
 
     return scraper.scrape(url), template
 
@@ -168,43 +151,6 @@ class ArticleUtils:
                     self.zap_tag_contents(tag.contents[x])
 
 
-class TuesdayNewsdayScraper(object):
-    """
-    scrapes a tuesday newsday page
-    """
-    def __init__(self, start_index=0):
-        """
-        Initializes the index counter for parsed objects to start_index or 0 if none is given
-        :return:
-        """
-        self.gremlin_zapper = GremlinZapper()
-        self.utils = ArticleUtils()
-
-    def scrape(self, url):
-        """
-
-        :param url:
-        :return:
-        """
-        soup = self.utils.get_soup_from_url(url)
-
-        self.utils.zap_tag_contents(soup)
-
-        self.utils.convert_urls(soup, url)
-
-        # print str(soup)
-
-        premailer = Premailer(html=str(soup))
-
-        output = premailer.transform()
-
-        inline_body_soup = BeautifulSoup(output, 'lxml')
-
-        table = inline_body_soup.find("table", {"class": "wrap"})
-
-        return {'content': str(table)}
-
-
 class MessagingScraper(object):
     """
     scrapes a tuesday newsday page
@@ -253,6 +199,43 @@ class MessagingScraper(object):
         # print str(body)
 
         return {'content': content_string}
+
+
+class TuesdayNewsdayScraper(object):
+    """
+    scrapes a tuesday newsday page
+    """
+    def __init__(self, start_index=0):
+        """
+        Initializes the index counter for parsed objects to start_index or 0 if none is given
+        :return:
+        """
+        self.gremlin_zapper = GremlinZapper()
+        self.utils = ArticleUtils()
+
+    def scrape(self, url):
+        """
+
+        :param url:
+        :return:
+        """
+        soup = self.utils.get_soup_from_url(url)
+
+        self.utils.zap_tag_contents(soup)
+
+        self.utils.convert_urls(soup, url)
+
+        # print str(soup)
+
+        premailer = Premailer(html=str(soup))
+
+        output = premailer.transform()
+
+        inline_body_soup = BeautifulSoup(output, 'lxml')
+
+        table = inline_body_soup.find("table", {"class": "wrap"})
+
+        return {'content': str(table)}
 
 
 class PageScraper(object):
