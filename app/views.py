@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app
 from forms import URLForm
-from utils import PageScraper, scrape_level3_page
+from utils import MessagingScraper
 
 
 @app.route('/', methods=['GET', ])
@@ -11,7 +11,11 @@ def index():
         url = request.args.get('url')
         form.url.data = url
         if form.validate():
-            article_dictionary, template = scrape_level3_page(url)
+
+            template = 'result.html'
+            scraper = MessagingScraper()
+
+            article_dictionary = scraper.scrape(url)
 
             if 'banner_image' in article_dictionary:
                 banner_image = article_dictionary['banner_image']

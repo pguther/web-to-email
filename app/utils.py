@@ -13,14 +13,6 @@ import pprint
 import tldextract
 
 
-def scrape_level3_page(url):
-
-    template = 'result.html'
-    scraper = MessagingScraper()
-
-    return scraper.scrape(url), template
-
-
 class ContentNotHTMLException(Exception):
     """
     Exception for when a url doesn't return html content
