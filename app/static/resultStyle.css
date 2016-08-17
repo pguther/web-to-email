@@ -1,20 +1,39 @@
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+
 textarea {
-    width: 640px;
+    width: 638px;
     height: 500px;
     display: block;
     margin-left: auto;
     margin-right: auto;
     flex: 1;
     overflow-y: scroll;
+    border: hidden;
 }
 
-#result-container {
-    flex: 1;
+h1 {
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    line-height: 1.25em;
+    font-size: 32px;
+    margin: 0;
+    color: #00448C;
 }
 
-#result-border {
-    border-style: solid;
-    border-width: 1px;
+li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding: 0px 100px;
 }
 
 #toggle-container {
@@ -26,32 +45,52 @@ textarea {
     padding: 20px;
 }
 
-#container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    padding: 0px 100px;
-}
-
-#errors {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    padding-right: 100px;
-    padding-top: 78px;
-}
-
-#error-list {
-    flex: 1;
-}
-
 .toggle-text {
     padding-left: 20px;
     padding-right: 20px;
 }
 
-.toggle-button { background-color: white; margin: 5px 0; border-radius: 20px; border: 2px solid #D0D0D0; height: 24px; cursor: pointer; width: 50px; position: relative; display: inline-block; user-select: none; -webkit-user-select: none; -ms-user-select: none; -moz-user-select: none; }
+#result-container {
+    flex: 1;
+}
+
+#result-border {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #737373;
+}
+
+#errors-container {
+    flex: 1;
+    margin-right: 100px;
+}
+
+#errors-header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 0px;
+}
+
+#errors-list {
+    background-color: #FFBABA;
+    margin: 0px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 20px;
+    min-height: 300px;
+}
+
+#no-errors {
+    background-color: #DFF2BF;
+    min-height: 320px;
+}
+
+
+
+.toggle-button { background-color: white; margin: 5px 0; border-radius: 20px; border: 2px solid #D0D0D0; height: 25px; cursor: pointer; width: 50px; position: relative; display: inline-block; user-select: none; -webkit-user-select: none; -ms-user-select: none; -moz-user-select: none; }
 .toggle-button button { cursor: pointer; outline: 0; display:block; position: absolute; left: 0; top: 0; border-radius: 100%; width: 30px; height: 30px; background-color: white; float: left; margin: -3px 0 0 -3px; border: 2px solid #D0D0D0; transition: left 0.3s; }
 .toggle-button-selected { background-color: #83B152; border: 2px solid #7DA652; }
 .toggle-button-selected button { left: 26px; top: 0; margin: 0; border: none; width: 24px; height: 24px; box-shadow: 0 0 4px rgba(0,0,0,0.1); }

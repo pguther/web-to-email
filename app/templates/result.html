@@ -63,9 +63,17 @@
     <hr>
 
     <div id="container">
-        <div id="errors">
-            <div id="error-list">
-            </div>
+        <div id="errors-container">
+            <h1 id="errors-header">Errors</h1>
+            {% if errors %}
+                <ul id="errors-list">
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div id="no-errors"></div>
+            {% endif %}
         </div>
         <div id="result-container" align="center">
             <div id="toggle-container">
@@ -79,8 +87,8 @@
                     HTML Code
                 </div>
             </div>
-            <div id="result" align="center">
-                <div id="result-border">
+            <div id="result-border" align="center">
+                <div id="result">
                     {% if content %}
                         {{ content | safe }}
                     {% endif %}
