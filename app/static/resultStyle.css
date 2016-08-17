@@ -26,6 +26,7 @@ h1 {
 li {
     padding-top: 5px;
     padding-bottom: 5px;
+    color: #00448C;
 }
 
 #container {
@@ -37,6 +38,7 @@ li {
 }
 
 #toggle-container {
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -75,6 +77,7 @@ li {
 }
 
 #errors-list {
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
     background-color: #FFBABA;
     margin: 0px;
     padding-top: 20px;
