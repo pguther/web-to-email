@@ -87,6 +87,48 @@ class TestArticleUtils(unittest.TestCase):
         assert 'style' in p.attrs
         assert p.attrs['style'] == 'margin:0 0 2em'
 
+    def test_find_altless_images(self):
+        """
+
+        :return:
+        """
+        html = '<img src="/no_alt_1.jpg"/> ' \
+               '<a href="/index.html"/> ' \
+               '<div><img src="/has_alt_1.jpg" alt="Has Alt Text 1"/><img src="/no_alt_2.jpg"/></div>' \
+               '<h1>This is a sample Title</h1> ' \
+               '<p>This is some Sample Text</p> ' \
+               '<img src="/has_alt_2.jpg" alt="Has Alt Text 2"/>' \
+               '<img src="/alt_with_no_text.jpg" alt=" \n"/>'
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        altless_images = self.utils.find_altless_images(soup)
+
+        # print altless_images
+
+        assert len(altless_images) == 3
+
+    def test_find_empty_tags(self):
+        """
+
+        :return:
+        """
+        html = '<img src="/no_alt_1.jpg"/> ' \
+               '<a href="/index.html"> Link to index.html</a>' \
+               '<div><img src="/has_alt_1.jpg" alt="Has Alt Text 1"/><p></p>' \
+               '<h1></h1> ' \
+               '<p>This is some Sample Text</p> ' \
+               '<img src="/has_alt_2.jpg" alt="Has Alt Text 2"/>' \
+               '<img src="/alt_with_no_text.jpg" alt=" \n"/>'
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        empty_tags = self.utils.find_empty_tags(soup)
+
+        # print empty_tags
+
+        assert len(empty_tags) == 2
+
 
 if __name__ == '__main__':
     unittest.main()

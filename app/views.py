@@ -15,26 +15,9 @@ def index():
             template = 'result.html'
             scraper = MessagingScraper()
 
-            article_dictionary = scraper.scrape(url)
+            content, empty_tags, altless_images = scraper.scrape(url)
 
-            if 'banner_image' in article_dictionary:
-                banner_image = article_dictionary['banner_image']
-            else:
-                banner_image = None
-
-            if 'title' in article_dictionary:
-                title = article_dictionary['title']
-            else:
-                title = None
-
-            if 'content' in article_dictionary:
-                content = article_dictionary['content']
-            else:
-                content = None
-
-            return render_template(template, banner_image=banner_image,
-                                   title=title,
-                                   content=content)
+            return render_template(template, content=content)
 
         for field, errors in form.errors.items():
             for error in errors:

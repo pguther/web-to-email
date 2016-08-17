@@ -44,6 +44,21 @@ class ArticleUtils:
     def __init__(self):
         self.article_slug_regex = re.compile(r".*\/([^\/\.]+)(?:.[^\.\/]+$)*")
         self.article_ending_regex = re.compile(r".*\/([^\/]+)")
+        self.empty_tags_dict = {
+            'area':     True,
+            'base':     True,
+            'br':       True,
+            'col':      True,
+            'hr':       True,
+            'img':      True,
+            'input':    True,
+            'link':     True,
+            'meta':     True,
+            'param':    True,
+            'command':  True,
+            'keygen':   True,
+            'source':   True,
+        }
 
     def get_soup_from_url(self, page_url):
         """
@@ -138,6 +153,53 @@ class ArticleUtils:
                 elif isinstance(tag.contents[x], bs4.element.Tag):
                     self.zap_tag_contents(tag.contents[x])
 
+    def find_empty_tags(self, soup):
+        """
+        Takes a BeautifulSoup soup, iterates through each tag, and if the tag is
+        an empty tag, adds it to the list of empty tags
+        :param soup:
+        :return:
+        """
+
+        empty_tags = []
+
+        for child in soup.recursiveChildGenerator():
+            if isinstance(child, bs4.element.Tag):
+                if child.name not in self.empty_tags_dict:
+                    if len(child.contents) == 0:
+                        empty_tags.append(str(child))
+                    else:
+                        empty = True
+                        for content in child.contents:
+                            stripped_content = str(content).lstrip().rstrip()
+                            if len(stripped_content) != 0:
+                                empty = False
+                        if empty:
+                            empty_tags.append(str(child))
+        return empty_tags
+
+    def find_altless_images(self, soup):
+        """
+        Takes a BeautifulSoup soup, iterates through each tag, and if the tag is
+        an image with no alt text, adds it to the list of images with no alt tags
+        :param soup:
+        :return:
+        """
+
+        images_without_alt = []
+
+        for child in soup.recursiveChildGenerator():
+            if isinstance(child, bs4.element.Tag):
+                if child.name == 'img':
+                    if 'alt' in child.attrs:
+                        alt = child.attrs['alt'].lstrip().rstrip()
+                        if len(alt) == 0:
+                            images_without_alt.append(str(child))
+                    else:
+                        images_without_alt.append(str(child))
+
+        return images_without_alt
+
 
 class MessagingScraper(object):
     """
@@ -184,6 +246,10 @@ class MessagingScraper(object):
 
         content_tag = inline_body_soup.find('div', {'class': 'content_div'})
 
+        empty_tags = self.utils.find_empty_tags(content_tag)
+
+        altless_images = self.utils.find_altless_images(content_tag)
+
         content_string = ''
 
         if content_tag is not None:
@@ -200,7 +266,7 @@ class MessagingScraper(object):
                 else:
                     content_string += str(content)
 
-        return {'content': content_string}
+        return content_string, empty_tags, altless_images
 
 
 class GremlinZapper(object):
