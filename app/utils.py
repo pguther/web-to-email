@@ -165,9 +165,9 @@ class ArticleUtils:
 
         for child in soup.recursiveChildGenerator():
             if isinstance(child, bs4.element.Tag):
-                if child.name not in self.empty_tags_dict:
+                if str(child.name).lower() not in self.empty_tags_dict:
                     if len(child.contents) == 0:
-                        empty_tags.append(str(child))
+                        empty_tags.append('Tag is empty: ' + str(child))
                     else:
                         empty = True
                         for content in child.contents:
@@ -175,7 +175,11 @@ class ArticleUtils:
                             if len(stripped_content) != 0:
                                 empty = False
                         if empty:
-                            empty_tags.append(str(child))
+                            empty_tags.append('Tag is empty: ' + str(child))
+
+        if len(empty_tags) == 0:
+            return None
+
         return empty_tags
 
     def find_altless_images(self, soup):
@@ -194,9 +198,12 @@ class ArticleUtils:
                     if 'alt' in child.attrs:
                         alt = child.attrs['alt'].lstrip().rstrip()
                         if len(alt) == 0:
-                            images_without_alt.append(str(child))
+                            images_without_alt.append('Image has no alt: ' + str(child))
                     else:
-                        images_without_alt.append(str(child))
+                        images_without_alt.append('Image has no alt: ' + str(child))
+
+        if len(images_without_alt) == 0:
+            return None
 
         return images_without_alt
 
@@ -250,6 +257,13 @@ class MessagingScraper(object):
 
         altless_images = self.utils.find_altless_images(content_tag)
 
+        if empty_tags is None and altless_images is None:
+            errors = None
+        elif empty_tags is None:
+            errors = altless_images
+        else:
+            errors = empty_tags
+
         content_string = ''
 
         if content_tag is not None:
@@ -266,7 +280,7 @@ class MessagingScraper(object):
                 else:
                     content_string += str(content)
 
-        return content_string, empty_tags, altless_images
+        return content_string, errors
 
 
 class GremlinZapper(object):

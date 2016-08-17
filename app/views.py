@@ -15,9 +15,9 @@ def index():
             template = 'result.html'
             scraper = MessagingScraper()
 
-            content, empty_tags, altless_images = scraper.scrape(url)
+            content, errors = scraper.scrape(url)
 
-            return render_template(template, content=content)
+            return render_template(template, content=content, errors=errors)
 
         for field, errors in form.errors.items():
             for error in errors:
