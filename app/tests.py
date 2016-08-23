@@ -98,7 +98,8 @@ class TestArticleUtils(unittest.TestCase):
                '<h1>This is a sample Title</h1> ' \
                '<p>This is some Sample Text</p> ' \
                '<img src="/has_alt_2.jpg" alt="Has Alt Text 2"/>' \
-               '<img src="/alt_with_no_text.jpg" alt=" \n"/>'
+               '<img src="/alt_with_no_text.jpg" alt=" \n"/>' \
+               '<img alt="" class="mFullImage" src="active-learning-640.jpg" style="height="185" width="250"/>'
 
         soup = BeautifulSoup(html, 'lxml')
 
@@ -106,7 +107,7 @@ class TestArticleUtils(unittest.TestCase):
 
         # print altless_images
 
-        assert len(altless_images) == 3
+        assert len(altless_images) == 4
 
     def test_find_empty_tags(self):
         """
@@ -118,8 +119,10 @@ class TestArticleUtils(unittest.TestCase):
                '<div><img src="/has_alt_1.jpg" alt="Has Alt Text 1"/><p></p>' \
                '<h1></h1> ' \
                '<p>This is some Sample Text</p> ' \
-               '<img src="/has_alt_2.jpg" alt="Has Alt Text 2"/>' \
-               '<img src="/alt_with_no_text.jpg" alt=" \n"/>'
+               '<img src="" alt="Has Alt Text 2"/>' \
+               '<a href=""> Link to index.html</a>' \
+               '<a> Link to index.html</a>' \
+               '<img alt=" \n"/>'
 
         soup = BeautifulSoup(html, 'lxml')
 
@@ -127,7 +130,7 @@ class TestArticleUtils(unittest.TestCase):
 
         # print empty_tags
 
-        assert len(empty_tags) == 2
+        assert len(empty_tags) == 6
 
 
 if __name__ == '__main__':

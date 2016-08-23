@@ -44,20 +44,15 @@ class ArticleUtils:
     def __init__(self):
         self.article_slug_regex = re.compile(r".*\/([^\/\.]+)(?:.[^\.\/]+$)*")
         self.article_ending_regex = re.compile(r".*\/([^\/]+)")
-        self.empty_tags_dict = {
-            'area':     True,
-            'base':     True,
-            'br':       True,
-            'col':      True,
-            'hr':       True,
-            'img':      True,
-            'input':    True,
-            'link':     True,
-            'meta':     True,
-            'param':    True,
-            'command':  True,
-            'keygen':   True,
-            'source':   True,
+        self.content_tags_dict = {
+            'h1':   True,
+            'h2':   True,
+            'h3':   True,
+            'h4':   True,
+            'h5':   True,
+            'h6':   True,
+            'p':    True,
+            'li':   True,
         }
 
     def get_soup_from_url(self, page_url):
@@ -165,7 +160,7 @@ class ArticleUtils:
 
         for child in soup.recursiveChildGenerator():
             if isinstance(child, bs4.element.Tag):
-                if str(child.name).lower() not in self.empty_tags_dict:
+                if str(child.name).lower() in self.content_tags_dict:
                     if len(child.contents) == 0:
                         empty_tags.append('Tag is empty: ' + str(child))
                     else:
@@ -177,8 +172,30 @@ class ArticleUtils:
                         if empty:
                             empty_tags.append('Tag is empty: ' + str(child))
 
-        if len(empty_tags) == 0:
-            return None
+                elif str(child.name).lower() == 'img':
+                    if 'src' not in child.attrs:
+                        empty_tags.append('Missing src attribute: ' + str(child))
+                    else:
+                        if len(child.attrs['src'].lstrip().rstrip()) == 0:
+                            empty_tags.append('Missing src attribute: ' + str(child))
+
+                elif str(child.name).lower() == 'a':
+                    if len(child.contents) == 0:
+                        empty_tags.append('Tag is empty: ' + str(child))
+                    else:
+                        empty = True
+                        for content in child.contents:
+                            stripped_content = str(content).lstrip().rstrip()
+                            if len(stripped_content) != 0:
+                                empty = False
+                        if empty:
+                            empty_tags.append('Tag is empty: ' + str(child))
+                        else:
+                            if 'href' not in child.attrs:
+                                empty_tags.append('Missing href attribute: ' + str(child))
+                            else:
+                                if len(child.attrs['href'].lstrip().rstrip()) == 0:
+                                    empty_tags.append('Missing href attribute: ' + str(child))
 
         return empty_tags
 
@@ -201,9 +218,6 @@ class ArticleUtils:
                             images_without_alt.append('Image has no alt: ' + str(child))
                     else:
                         images_without_alt.append('Image has no alt: ' + str(child))
-
-        if len(images_without_alt) == 0:
-            return None
 
         return images_without_alt
 
@@ -257,12 +271,7 @@ class MessagingScraper(object):
 
         altless_images = self.utils.find_altless_images(content_tag)
 
-        if empty_tags is None and altless_images is None:
-            errors = None
-        elif empty_tags is None:
-            errors = altless_images
-        else:
-            errors = empty_tags
+        errors = altless_images + empty_tags
 
         content_string = ''
 
