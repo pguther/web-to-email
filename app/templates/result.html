@@ -38,7 +38,7 @@
                                         data-clipboard-target="#textcode">Copy To Clipboard</button>');
 
                 resultDiv.empty();
-                var textArea = $('<textarea id="textcode"></textarea>');
+                var textArea = $('<textarea id="textcode" readonly></textarea>');
                 resultHtml = escapeHtml(resultHtml);
                 textArea.html(resultHtml);
 
