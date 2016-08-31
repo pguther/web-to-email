@@ -1,5 +1,5 @@
 # web-to-email
-Flask application to convert a level 3 ucsc page into an email
+Flask application to inline an email from messaging.ucsc.edu for import to imodules
 
 ##### Put in web-to-email/config.py:
     WTF_CSRF_ENABLED = False
