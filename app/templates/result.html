@@ -32,6 +32,7 @@
             ga('send', 'event', 'CodeToggleButton', 'toggle');
             if(code == 0){
                 var resultDiv = $( "#result" );
+                var copyDiv = $('#copy-container');
                 var resultHtml = resultDiv.html();
                 var copyToClipboard = $('<button class="button" id="copy-button" \
                                         data-clipboard-target="#textcode">Copy To Clipboard</button>');
@@ -42,13 +43,16 @@
                 textArea.html(resultHtml);
 
                 resultDiv.append(textArea);
-                resultDiv.append(copyToClipboard);
+
+                copyDiv.append(copyToClipboard);
                 new Clipboard('#copy-button');
                 code = 1;
             } else {
                 var textcode = $( "#textcode" ).text();
+                var copyButton = $('#copy-button');
                 $( "#result" ).html(textcode);
                 code = 0;
+                copyButton.remove();
             }
         });
     </script>
@@ -86,6 +90,9 @@
                 <div class="toggle-text">
                     HTML Code
                 </div>
+            </div>
+            <div id="copy-container">
+
             </div>
             <div id="result-border" align="center">
                 <div id="result">
