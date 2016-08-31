@@ -94,30 +94,34 @@ class ArticleUtils:
         images = body.find_all("img")
         if images is not None:
             for image in images:
-                image_relative_src = image.attrs['src']
-                image_src = urljoin(page_url, image_relative_src)
-                image.attrs['src'] = image_src
+                if 'src' in image.attrs:
+                    image_relative_src = image.attrs['src']
+                    image_src = urljoin(page_url, image_relative_src)
+                    image.attrs['src'] = image_src
 
         iframes = body.find_all("iframe")
         if iframes is not None:
             for iframe in iframes:
-                iframe_relative_src = iframe.attrs['src']
-                iframe_src = urljoin(page_url, iframe_relative_src)
-                iframe.attrs['src'] = iframe_src
+                if 'src' in iframe.attrs:
+                    iframe_relative_src = iframe.attrs['src']
+                    iframe_src = urljoin(page_url, iframe_relative_src)
+                    iframe.attrs['src'] = iframe_src
 
         a_tags = body.find_all("a")
         if a_tags is not None:
             for a_tag in a_tags:
-                a_tag_relative_src = a_tag.attrs['href']
-                a_tag_src = urljoin(page_url, a_tag_relative_src)
-                a_tag.attrs['href'] = a_tag_src
+                if 'href' in a_tag.attrs:
+                    a_tag_relative_src = a_tag.attrs['href']
+                    a_tag_src = urljoin(page_url, a_tag_relative_src)
+                    a_tag.attrs['href'] = a_tag_src
 
         links = body.find_all("link")
         if links is not None:
             for link in links:
-                link_relative_src = link.attrs['href']
-                link_src = urljoin(page_url, link_relative_src)
-                link.attrs['href'] = link_src
+                if 'href' in link.attrs:
+                    link_relative_src = link.attrs['href']
+                    link_src = urljoin(page_url, link_relative_src)
+                    link.attrs['href'] = link_src
 
     def add_inline_ucsc_css(self, tag_text):
         """
