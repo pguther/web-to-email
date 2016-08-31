@@ -12,6 +12,16 @@ class TestArticleUtils(unittest.TestCase):
         """
         self.utils = ArticleUtils()
 
+    def test_validate_url(self):
+        """
+
+        :return:
+        """
+        assert self.utils.validate_url('http://www.google.com') == True
+        assert self.utils.validate_url('') == False
+        assert self.utils.validate_url('   ') == False
+        assert self.utils.validate_url('asdfasdf.sdaa') == False
+
     def test_convert_urls(self):
         """
         tests converting the urls in a soup
@@ -94,7 +104,7 @@ class TestArticleUtils(unittest.TestCase):
         """
         html = '<img src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg"/> ' \
                '<a href="http://www.ucsc.edu/index.html"/> ' \
-               '<div><img src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg" alt="Has Alt Text 1"/>' \
+               '<div><img src="not a real link" alt="Has Alt Text 1"/>' \
                '<img src=""/></div>' \
                '<img/></div>' \
                '<h1>This is a sample Title</h1> ' \
@@ -108,9 +118,8 @@ class TestArticleUtils(unittest.TestCase):
 
         image_errors = self.utils.image_check(soup)
 
-        assert image_errors is not None and len(image_errors.keys()) == 3
-        assert len(image_errors['Missing src attribute: ']) == 1
-        assert len(image_errors['Unable to find src image: ']) == 2
+        assert image_errors is not None and len(image_errors.keys()) == 2
+        assert len(image_errors['Malformed or Missing link: ']) == 3
         assert len(image_errors['Image has no alt text: ']) == 5
 
     def test_link_check(self):
@@ -120,7 +129,7 @@ class TestArticleUtils(unittest.TestCase):
         """
         html = '<a>Tag with no href</a>' \
                '<a href="">Tag with empty href</a>' '' \
-               '<a href="http://messaging.ucsc.edu/fake_link">Tag with not working link</a>' \
+               '<a href="not a real link">Tag with not working link</a>' \
                '<a href="http://messaging.ucsc.edu/testing/may/admin-letter-test.html"></a>' \
                '<a href="http://messaging.ucsc.edu/testing/may/admin-letter-test.html"><Working Link</a>'
 
@@ -128,9 +137,10 @@ class TestArticleUtils(unittest.TestCase):
 
         link_errors = self.utils.link_check(soup)
 
-        assert link_errors is not None and len(link_errors.keys()) == 3
-        assert len(link_errors['Missing href attribute: ']) == 1
-        assert len(link_errors['Link is broken: ']) == 2
+        print link_errors
+
+        assert link_errors is not None and len(link_errors.keys()) == 2
+        assert len(link_errors['Malformed or Missing link: ']) == 3
         assert len(link_errors['Link is empty: ']) == 1
 
     def test_tag_check(self):
