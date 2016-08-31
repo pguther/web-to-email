@@ -87,51 +87,88 @@ class TestArticleUtils(unittest.TestCase):
         assert 'style' in p.attrs
         assert p.attrs['style'] == 'margin:0 0 2em'
 
-    def test_find_altless_images(self):
+    def test_image_check(self):
         """
 
         :return:
         """
-        html = '<img src="/no_alt_1.jpg"/> ' \
-               '<a href="/index.html"/> ' \
-               '<div><img src="/has_alt_1.jpg" alt="Has Alt Text 1"/><img src="/no_alt_2.jpg"/></div>' \
+        html = '<img src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg"/> ' \
+               '<a href="http://www.ucsc.edu/index.html"/> ' \
+               '<div><img src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg" alt="Has Alt Text 1"/>' \
+               '<img src=""/></div>' \
+               '<img/></div>' \
                '<h1>This is a sample Title</h1> ' \
-               '<p>This is some Sample Text</p> ' \
-               '<img src="/has_alt_2.jpg" alt="Has Alt Text 2"/>' \
-               '<img src="/alt_with_no_text.jpg" alt=" \n"/>' \
-               '<img alt="" class="mFullImage" src="active-learning-640.jpg" style="height="185" width="250"/>'
+               '<img src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg" alt="Has Alt Text 2"/>' \
+               '<img src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg" alt=" \n"/>' \
+               '<img alt="" class="mFullImage" ' \
+               'src="http://www.ucsc.edu/identity/images/ucsc-stack.jpg" style="height="185" width="250"/>' \
+               '<img src="http://www.ucsc.edu/identity/images/nonexistant_image.jpg" alt="not working link"/>'
 
         soup = BeautifulSoup(html, 'lxml')
 
-        altless_images = self.utils.find_altless_images(soup)
+        image_errors = self.utils.image_check(soup)
 
-        # print altless_images
+        assert image_errors is not None and len(image_errors.keys()) == 3
+        assert len(image_errors['Missing src attribute: ']) == 1
+        assert len(image_errors['Unable to find src image: ']) == 2
+        assert len(image_errors['Image has no alt text: ']) == 5
 
-        assert len(altless_images) == 4
-
-    def test_find_empty_tags(self):
+    def test_link_check(self):
         """
 
         :return:
         """
-        html = '<img src="/no_alt_1.jpg"/> ' \
-               '<a href="/index.html"> Link to index.html</a>' \
-               '<div><img src="/has_alt_1.jpg" alt="Has Alt Text 1"/><p></p>' \
-               '<h1></h1> ' \
-               '<p>This is some Sample Text</p> ' \
-               '<img src="" alt="Has Alt Text 2"/>' \
-               '<a href=""> Link to index.html</a>' \
-               '<a> Link to index.html</a>' \
-               '<img alt=" \n"/>'
+        html = '<a>Tag with no href</a>' \
+               '<a href="">Tag with empty href</a>' '' \
+               '<a href="http://messaging.ucsc.edu/fake_link">Tag with not working link</a>' \
+               '<a href="http://messaging.ucsc.edu/testing/may/admin-letter-test.html"></a>' \
+               '<a href="http://messaging.ucsc.edu/testing/may/admin-letter-test.html"><Working Link</a>'
 
         soup = BeautifulSoup(html, 'lxml')
 
-        empty_tags = self.utils.find_empty_tags(soup)
+        link_errors = self.utils.link_check(soup)
 
-        # print empty_tags
+        assert link_errors is not None and len(link_errors.keys()) == 3
+        assert len(link_errors['Missing href attribute: ']) == 1
+        assert len(link_errors['Link is broken: ']) == 2
+        assert len(link_errors['Link is empty: ']) == 1
 
-        assert len(empty_tags) == 6
+    def test_tag_check(self):
+        """
+        Checks content tag check function
+        :return:
+        """
+        html = '<h1></h1>' \
+               '<h1> </h1>' \
+               '<h1>Not Empty</h1>' \
+               '<h2></h2>' \
+               '<h2> </h2>' \
+               '<h2>Not Empty</h2>' \
+               '<h3></h3>' \
+               '<h3> </h3>' \
+               '<h3>Not Empty</h3>' \
+               '<h4></h4>' \
+               '<h4> </h4>' \
+               '<h4>Not Empty</h4>' \
+               '<h5></h5>' \
+               '<h5> </h5>' \
+               '<h5>Not Empty</h5>' \
+               '<h6></h6>' \
+               '<h6> </h6>' \
+               '<h6>Not Empty</h6>' \
+               '<p></p>'   \
+               '<p> </p>'   \
+               '<p>Not Empty</p>'   \
+               '<li></li>' \
+               '<li> </li>' \
+               '<li>Not Empty</li>'
 
+        soup = BeautifulSoup(html, 'lxml')
+
+        tag_errors = self.utils.tag_check(soup)
+
+        assert tag_errors is not None and len(tag_errors.keys()) == 1
+        assert len(tag_errors['Tag is empty: ']) == 16
 
 if __name__ == '__main__':
     unittest.main()

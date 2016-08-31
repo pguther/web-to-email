@@ -29,6 +29,12 @@ li {
     color: #00448C;
 }
 
+pre {
+    width: 90%;
+    overflow: auto;
+    white-space: pre-wrap;
+}
+
 #container {
     display: flex;
     flex-direction: row;
@@ -67,7 +73,7 @@ li {
     margin-right: 100px;
 }
 
-#errors-header {
+.errors-header {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -76,19 +82,18 @@ li {
     padding: 20px 0px;
 }
 
-#errors-list {
+.errors-list {
     font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
     background-color: #FFBABA;
     margin: 0px;
     padding-top: 20px;
     padding-bottom: 20px;
     padding-right: 20px;
-    min-height: 300px;
+    min-height: 100px;
 }
 
-#no-errors {
+.no-errors {
     background-color: #DFF2BF;
-    min-height: 320px;
 }
 
 

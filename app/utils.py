@@ -70,6 +70,20 @@ class ArticleUtils:
             raise ContentNotHTMLException()
         return BeautifulSoup(r.content, 'lxml')
 
+    def get_response(self, url):
+        """
+        Gets the response code for a url
+        :param url:
+        :return:
+        """
+
+        # noinspection PyBroadException
+        try:
+            r = requests.get(url)
+        except:
+            return 404
+        return r.status_code
+
     def convert_urls(self, body, page_url):
         """
         converts all urls in the body from relative to full urls
@@ -148,7 +162,7 @@ class ArticleUtils:
                 elif isinstance(tag.contents[x], bs4.element.Tag):
                     self.zap_tag_contents(tag.contents[x])
 
-    def find_empty_tags(self, soup):
+    def tag_check(self, soup):
         """
         Takes a BeautifulSoup soup, iterates through each tag, and if the tag is
         an empty tag, adds it to the list of empty tags
@@ -156,13 +170,15 @@ class ArticleUtils:
         :return:
         """
 
-        empty_tags = []
+        tag_errors = {
+            'Tag is empty: ': [],
+        }
 
         for child in soup.recursiveChildGenerator():
             if isinstance(child, bs4.element.Tag):
                 if str(child.name).lower() in self.content_tags_dict:
                     if len(child.contents) == 0:
-                        empty_tags.append('Tag is empty: ' + str(child))
+                        tag_errors['Tag is empty: '].append(str(child))
                     else:
                         empty = True
                         for content in child.contents:
@@ -170,56 +186,122 @@ class ArticleUtils:
                             if len(stripped_content) != 0:
                                 empty = False
                         if empty:
-                            empty_tags.append('Tag is empty: ' + str(child))
+                            tag_errors['Tag is empty: '].append(str(child))
 
-                elif str(child.name).lower() == 'img':
-                    if 'src' not in child.attrs:
-                        empty_tags.append('Missing src attribute: ' + str(child))
-                    else:
-                        if len(child.attrs['src'].lstrip().rstrip()) == 0:
-                            empty_tags.append('Missing src attribute: ' + str(child))
+        no_errors = True
 
-                elif str(child.name).lower() == 'a':
-                    if len(child.contents) == 0:
-                        empty_tags.append('Tag is empty: ' + str(child))
-                    else:
-                        empty = True
-                        for content in child.contents:
-                            stripped_content = str(content).lstrip().rstrip()
-                            if len(stripped_content) != 0:
-                                empty = False
-                        if empty:
-                            empty_tags.append('Tag is empty: ' + str(child))
-                        else:
-                            if 'href' not in child.attrs:
-                                empty_tags.append('Missing href attribute: ' + str(child))
-                            else:
-                                if len(child.attrs['href'].lstrip().rstrip()) == 0:
-                                    empty_tags.append('Missing href attribute: ' + str(child))
+        for key, value in tag_errors.iteritems():
+            if len(value) != 0:
+                no_errors = False
 
-        return empty_tags
+        if no_errors:
+            return None
+        else:
+            return tag_errors
 
-    def find_altless_images(self, soup):
+    def image_check(self, soup):
         """
-        Takes a BeautifulSoup soup, iterates through each tag, and if the tag is
-        an image with no alt text, adds it to the list of images with no alt tags
+        Takes a bs4 Soup , iterates through all the image tags, and checks them for errors including:
+            - missing alt attribute
+            - missing src attribute
+            - broken link
         :param soup:
         :return:
         """
 
-        images_without_alt = []
+        image_errors = {
+            'Missing src attribute: ': [],
+            'Unable to find src image: ': [],
+            'Image has no alt text: ': [],
+        }
 
-        for child in soup.recursiveChildGenerator():
-            if isinstance(child, bs4.element.Tag):
-                if child.name == 'img':
-                    if 'alt' in child.attrs:
-                        alt = child.attrs['alt'].lstrip().rstrip()
-                        if len(alt) == 0:
-                            images_without_alt.append('Image has no alt: ' + str(child))
-                    else:
-                        images_without_alt.append('Image has no alt: ' + str(child))
+        images = soup.find_all("img")
+        if images is not None:
+            for image in images:
+                if 'src' not in image.attrs:
+                    image_errors['Missing src attribute: '].append(str(image))
+                else:
+                    status_code = self.get_response(image['src'])
+                    if status_code != requests.codes.ok:
+                        image_errors['Unable to find src image: '].append(str(image))
 
-        return images_without_alt
+                if 'alt' in image.attrs:
+                    alt = image.attrs['alt'].lstrip().rstrip()
+                    if len(alt) == 0:
+                        image_errors['Image has no alt text: '].append(str(image))
+                else:
+                    image_errors['Image has no alt text: '].append(str(image))
+
+        no_errors = True
+
+        for key, value in image_errors.iteritems():
+            if len(value) != 0:
+                no_errors = False
+
+        if no_errors:
+            return None
+        else:
+            return image_errors
+
+    def link_check(self, soup):
+        """
+        Takes a bs4 Soup , iterates through all the <a> tags, and checks them for errors including:
+            - missing alt attribute
+            - missing src attribute
+            - broken link
+        :param soup:
+        :return:
+        """
+
+        link_errors = {
+            'Missing href attribute: ': [],
+            'Link is broken: ': [],
+            'Link is empty: ': [],
+        }
+
+        links = soup.find_all("a")
+        if links is not None:
+            for link in links:
+                if len(link.contents) == 0:
+                    link_errors['Link is empty: '].append(str(link))
+                else:
+                    empty = True
+                    for content in link.contents:
+                        stripped_content = str(content).lstrip().rstrip()
+                        if len(stripped_content) != 0:
+                            empty = False
+                    if empty:
+                        link_errors['Link is empty: '].append(str(link))
+                if 'href' not in link.attrs:
+                    link_errors['Missing href attribute: '].append(str(link))
+                else:
+                    status_code = self.get_response(link['href'])
+                    if status_code != requests.codes.ok:
+                        link_errors['Link is broken: '].append(str(link))
+
+        no_errors = True
+
+        for key, value in link_errors.iteritems():
+            if len(value) != 0:
+                no_errors = False
+
+        if no_errors:
+            return None
+        else:
+            return link_errors
+
+    def get_errors_dict(self, soup):
+        """
+        Returns a dictionary of error categories, each containing a dictionary of error types and lists of tags
+        :param soup:
+        :return:
+        """
+
+        return {
+            'Tag Check': self.tag_check(soup),
+            'Link Check': self.link_check(soup),
+            'Image Check': self.image_check(soup),
+        }
 
 
 class MessagingScraper(object):
@@ -267,11 +349,7 @@ class MessagingScraper(object):
 
         content_tag = inline_body_soup.find('div', {'class': 'content_div'})
 
-        empty_tags = self.utils.find_empty_tags(content_tag)
-
-        altless_images = self.utils.find_altless_images(content_tag)
-
-        errors = altless_images + empty_tags
+        errors = self.utils.get_errors_dict(content_tag)
 
         content_string = ''
 

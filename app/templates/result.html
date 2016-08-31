@@ -68,15 +68,23 @@
 
     <div id="container">
         <div id="errors-container">
-            <h1 id="errors-header">Errors</h1>
             {% if errors %}
-                <ul id="errors-list">
-                    {% for error in errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div id="no-errors"></div>
+                {% for error_category, error_types in errors.iteritems() %}
+                    <h1 class="errors-header">{{ error_category }}</h1>
+                    {% if error_types %}
+                        <ul class="errors-list">
+                            {% for error, tags in error_types.iteritems() %}
+                                {% for tag in tags %}
+                                    <li>{{ error }} <pre>{{ tag }}</pre> </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <ul class="errors-list no-errors">
+                            <li>Everything Looks Good!</li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
         </div>
         <div id="result-container" align="center">
