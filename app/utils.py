@@ -175,14 +175,14 @@ class ArticleUtils:
         """
 
         tag_errors = {
-            'Tag is empty: ': [],
+            'Tag is empty: ': ([], 'empty-tag'),
         }
 
         for child in soup.recursiveChildGenerator():
             if isinstance(child, bs4.element.Tag):
                 if str(child.name).lower() in self.content_tags_dict:
                     if len(child.contents) == 0:
-                        tag_errors['Tag is empty: '].append(str(child))
+                        tag_errors['Tag is empty: '][0].append(str(child))
                     else:
                         empty = True
                         for content in child.contents:
@@ -190,12 +190,12 @@ class ArticleUtils:
                             if len(stripped_content) != 0:
                                 empty = False
                         if empty:
-                            tag_errors['Tag is empty: '].append(str(child))
+                            tag_errors['Tag is empty: '][0].append(str(child))
 
         no_errors = True
 
         for key, value in tag_errors.iteritems():
-            if len(value) != 0:
+            if len(value[0]) != 0:
                 no_errors = False
 
         if no_errors:
@@ -214,29 +214,29 @@ class ArticleUtils:
         """
 
         image_errors = {
-            'Missing src attribute: ': [],
-            'Image has no alt text: ': [],
+            'Missing src attribute: ': ([], 'missing-src'),
+            'Image has no alt text: ': ([], 'missing-alt'),
         }
 
         images = soup.find_all("img")
         if images is not None:
             for image in images:
                 if 'src' not in image.attrs:
-                    image_errors['Missing src attribute: '].append(str(image))
+                    image_errors['Missing src attribute: '][0].append(str(image))
                 elif len(image['src'].lstrip().rstrip()) == 0:
-                    image_errors['Missing src attribute: '].append(str(image))
+                    image_errors['Missing src attribute: '][0].append(str(image))
 
                 if 'alt' in image.attrs:
                     alt = image.attrs['alt'].lstrip().rstrip()
                     if len(alt) == 0:
-                        image_errors['Image has no alt text: '].append(str(image))
+                        image_errors['Image has no alt text: '][0].append(str(image))
                 else:
-                    image_errors['Image has no alt text: '].append(str(image))
+                    image_errors['Image has no alt text: '][0].append(str(image))
 
         no_errors = True
 
         for key, value in image_errors.iteritems():
-            if len(value) != 0:
+            if len(value[0]) != 0:
                 no_errors = False
 
         if no_errors:
@@ -255,15 +255,15 @@ class ArticleUtils:
         """
 
         link_errors = {
-            'Missing href attribute: ': [],
-            'Link is empty: ': [],
+            'Missing href attribute: ': ([], 'missing-href'),
+            'Link is empty: ': ([], 'empty-link'),
         }
 
         links = soup.find_all("a")
         if links is not None:
             for link in links:
                 if len(link.contents) == 0:
-                    link_errors['Link is empty: '].append(str(link))
+                    link_errors['Link is empty: '][0].append(str(link))
                 else:
                     empty = True
                     for content in link.contents:
@@ -271,17 +271,17 @@ class ArticleUtils:
                         if len(stripped_content) != 0:
                             empty = False
                     if empty:
-                        link_errors['Link is empty: '].append(str(link))
+                        link_errors['Link is empty: '][0].append(str(link))
                 if 'href' not in link.attrs:
-                    link_errors['Missing href attribute: '].append(str(link))
+                    link_errors['Missing href attribute: '][0].append(str(link))
                 else:
                     if len(link['href'].lstrip().rstrip()) == 0:
-                        link_errors['Missing href attribute: '].append(str(link))
+                        link_errors['Missing href attribute: '][0].append(str(link))
 
         no_errors = True
 
         for key, value in link_errors.iteritems():
-            if len(value) != 0:
+            if len(value[0]) != 0:
                 no_errors = False
 
         if no_errors:

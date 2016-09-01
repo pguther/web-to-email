@@ -73,9 +73,9 @@
                     <h1 class="errors-header">{{ error_category }}</h1>
                     {% if error_types %}
                         <ul class="errors-list">
-                            {% for error, tags in error_types.iteritems() %}
-                                {% for tag in tags %}
-                                    <li>{{ error }} <pre>{{ tag }}</pre> </li>
+                            {% for error, error_tuple in error_types.iteritems() %}
+                                {% for tag in error_tuple[0] %}
+                                    <li class="{{error_tuple[1]}}">{{ error }} <pre>{{ tag }}</pre> </li>
                                 {% endfor %}
                             {% endfor %}
                         </ul>
