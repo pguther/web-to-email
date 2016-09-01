@@ -109,8 +109,8 @@ class TestArticleUtils(unittest.TestCase):
         image_errors = self.utils.image_check(soup)
 
         assert image_errors is not None and len(image_errors.keys()) == 2
-        assert len(image_errors['Missing src attribute: ']) == 2
-        assert len(image_errors['Image has no alt text: ']) == 5
+        assert len(image_errors['Missing src attribute: '][0]) == 2
+        assert len(image_errors['Image has no alt text: '][0]) == 5
 
     def test_link_check(self):
         """
@@ -128,8 +128,8 @@ class TestArticleUtils(unittest.TestCase):
         link_errors = self.utils.link_check(soup)
 
         assert link_errors is not None and len(link_errors.keys()) == 2
-        assert len(link_errors['Missing href attribute: ']) == 2
-        assert len(link_errors['Link is empty: ']) == 1
+        assert len(link_errors['Missing href attribute: '][0]) == 2
+        assert len(link_errors['Link is empty: '][0]) == 1
 
     def test_tag_check(self):
         """
@@ -166,7 +166,7 @@ class TestArticleUtils(unittest.TestCase):
         tag_errors = self.utils.tag_check(soup)
 
         assert tag_errors is not None and len(tag_errors.keys()) == 1
-        assert len(tag_errors['Tag is empty: ']) == 16
+        assert len(tag_errors['Tag is empty: '][0]) == 16
 
 if __name__ == '__main__':
     unittest.main()
