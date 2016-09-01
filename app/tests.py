@@ -108,9 +108,16 @@ class TestArticleUtils(unittest.TestCase):
 
         image_errors = self.utils.image_check(soup)
 
-        assert image_errors is not None and len(image_errors.keys()) == 2
-        assert len(image_errors['Missing src attribute: '][0]) == 2
-        assert len(image_errors['Image has no alt text: '][0]) == 5
+        assert image_errors.category == 'Image Check' and image_errors.class_name == 'image-check'
+        assert len(image_errors.types) == 2
+
+        missing_src = image_errors.get_type('Missing Source')
+        assert missing_src is not None
+        assert len(missing_src.tags) == 2
+
+        missing_alt = image_errors.get_type('Missing Alt Text')
+        assert missing_alt is not None
+        assert len(missing_alt.tags) == 5
 
     def test_link_check(self):
         """
@@ -127,9 +134,16 @@ class TestArticleUtils(unittest.TestCase):
 
         link_errors = self.utils.link_check(soup)
 
-        assert link_errors is not None and len(link_errors.keys()) == 2
-        assert len(link_errors['Missing href attribute: '][0]) == 2
-        assert len(link_errors['Link is empty: '][0]) == 1
+        assert link_errors.category == 'Link Check' and link_errors.class_name == 'link-check'
+        assert len(link_errors.types) == 2
+
+        empty_link = link_errors.get_type('Empty Link')
+        assert empty_link is not None
+        assert len(empty_link.tags) == 1
+
+        missing_href = link_errors.get_type('Missing href')
+        assert missing_href is not None
+        assert len(missing_href.tags) == 2
 
     def test_tag_check(self):
         """
@@ -165,8 +179,12 @@ class TestArticleUtils(unittest.TestCase):
 
         tag_errors = self.utils.tag_check(soup)
 
-        assert tag_errors is not None and len(tag_errors.keys()) == 1
-        assert len(tag_errors['Tag is empty: '][0]) == 16
+        assert tag_errors.category == 'Tag Check' and tag_errors.class_name == 'tag-check'
+        assert len(tag_errors.types) == 1
+
+        empty_tag = tag_errors.get_type('Empty Tag')
+        assert empty_tag is not None
+        assert len(empty_tag.tags) == 16
 
 if __name__ == '__main__':
     unittest.main()

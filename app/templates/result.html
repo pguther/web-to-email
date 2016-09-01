@@ -69,13 +69,13 @@
     <div id="container">
         <div id="errors-container">
             {% if errors %}
-                {% for error_category, error_types in errors.iteritems() %}
-                    <h1 class="errors-header">{{ error_category }}</h1>
-                    {% if error_types %}
+                {% for error_category in errors %}
+                    <h1 id="{{ error_category.class_name }}" class="errors-header">{{ error_category.category }}</h1>
+                    {% if error_category.types %}
                         <ul class="errors-list">
-                            {% for error, error_tuple in error_types.iteritems() %}
-                                {% for tag in error_tuple[0] %}
-                                    <li class="{{error_tuple[1]}}">{{ error }} <pre>{{ tag }}</pre> </li>
+                            {% for key, type in error_category.types.iteritems() %}
+                                {% for tag in type.tags %}
+                                    <li class="{{ type.class_name }}">{{ type.name }}: <pre>{{ tag }}</pre></li>
                                 {% endfor %}
                             {% endfor %}
                         </ul>

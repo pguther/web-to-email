@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import re
 from unidecode import unidecode
 from premailer import Premailer
+from errors import ErrorCategory, ErrorType
 
 
 class ContentNotHTMLException(Exception):
@@ -36,7 +37,7 @@ class ImageException(Exception):
         Exception.__init__(self, "Error getting height and width of image " + image_url)
 
 
-class ArticleUtils:
+class ArticleUtils(object):
     """
     This class provides functions to manipulate and reformat information scraped from
     articles, like urls, category names, etc.
@@ -174,15 +175,14 @@ class ArticleUtils:
         :return:
         """
 
-        tag_errors = {
-            'Tag is empty: ': ([], 'empty-tag'),
-        }
+        tag_check = ErrorCategory('Tag Check')
+        empty_tag = ErrorType('Empty Tag')
 
         for child in soup.recursiveChildGenerator():
             if isinstance(child, bs4.element.Tag):
                 if str(child.name).lower() in self.content_tags_dict:
                     if len(child.contents) == 0:
-                        tag_errors['Tag is empty: '][0].append(str(child))
+                        empty_tag.add_tag(str(child))
                     else:
                         empty = True
                         for content in child.contents:
@@ -190,18 +190,12 @@ class ArticleUtils:
                             if len(stripped_content) != 0:
                                 empty = False
                         if empty:
-                            tag_errors['Tag is empty: '][0].append(str(child))
+                            empty_tag.add_tag(str(child))
 
-        no_errors = True
+        if len(empty_tag.tags) > 0:
+            tag_check.add_type(empty_tag)
 
-        for key, value in tag_errors.iteritems():
-            if len(value[0]) != 0:
-                no_errors = False
-
-        if no_errors:
-            return None
-        else:
-            return tag_errors
+        return tag_check
 
     def image_check(self, soup):
         """
@@ -213,36 +207,32 @@ class ArticleUtils:
         :return:
         """
 
-        image_errors = {
-            'Missing src attribute: ': ([], 'missing-src'),
-            'Image has no alt text: ': ([], 'missing-alt'),
-        }
+        image_check = ErrorCategory('Image Check')
+        missing_src = ErrorType('Missing Source')
+        missing_alt = ErrorType('Missing Alt Text')
 
         images = soup.find_all("img")
         if images is not None:
             for image in images:
                 if 'src' not in image.attrs:
-                    image_errors['Missing src attribute: '][0].append(str(image))
+                    missing_src.add_tag(str(image))
                 elif len(image['src'].lstrip().rstrip()) == 0:
-                    image_errors['Missing src attribute: '][0].append(str(image))
+                    missing_src.add_tag(str(image))
 
                 if 'alt' in image.attrs:
                     alt = image.attrs['alt'].lstrip().rstrip()
                     if len(alt) == 0:
-                        image_errors['Image has no alt text: '][0].append(str(image))
+                        missing_alt.add_tag(str(image))
                 else:
-                    image_errors['Image has no alt text: '][0].append(str(image))
+                    missing_alt.add_tag(str(image))
 
-        no_errors = True
+        if len(missing_src.tags) > 0:
+            image_check.add_type(missing_src)
 
-        for key, value in image_errors.iteritems():
-            if len(value[0]) != 0:
-                no_errors = False
+        if len(missing_alt.tags) > 0:
+            image_check.add_type(missing_alt)
 
-        if no_errors:
-            return None
-        else:
-            return image_errors
+        return image_check
 
     def link_check(self, soup):
         """
@@ -254,16 +244,15 @@ class ArticleUtils:
         :return:
         """
 
-        link_errors = {
-            'Missing href attribute: ': ([], 'missing-href'),
-            'Link is empty: ': ([], 'empty-link'),
-        }
+        link_check = ErrorCategory('Link Check')
+        empty_link = ErrorType('Empty Link')
+        missing_href = ErrorType('Missing href')
 
         links = soup.find_all("a")
         if links is not None:
             for link in links:
                 if len(link.contents) == 0:
-                    link_errors['Link is empty: '][0].append(str(link))
+                    empty_link.add_tag(str(link))
                 else:
                     empty = True
                     for content in link.contents:
@@ -271,23 +260,20 @@ class ArticleUtils:
                         if len(stripped_content) != 0:
                             empty = False
                     if empty:
-                        link_errors['Link is empty: '][0].append(str(link))
+                        empty_link.add_tag(str(link))
                 if 'href' not in link.attrs:
-                    link_errors['Missing href attribute: '][0].append(str(link))
+                    missing_href.add_tag(str(link))
                 else:
                     if len(link['href'].lstrip().rstrip()) == 0:
-                        link_errors['Missing href attribute: '][0].append(str(link))
+                        missing_href.add_tag(str(link))
 
-        no_errors = True
+        if len(empty_link.tags) > 0:
+            link_check.add_type(empty_link)
 
-        for key, value in link_errors.iteritems():
-            if len(value[0]) != 0:
-                no_errors = False
+        if len(missing_href.tags) > 0:
+            link_check.add_type(missing_href)
 
-        if no_errors:
-            return None
-        else:
-            return link_errors
+        return link_check
 
     def get_errors_dict(self, soup):
         """
@@ -296,11 +282,11 @@ class ArticleUtils:
         :return:
         """
 
-        return {
-            'Tag Check': self.tag_check(soup),
-            'Link Check': self.link_check(soup),
-            'Image Check': self.image_check(soup),
-        }
+        return [
+            self.image_check(soup),
+            self.link_check(soup),
+            self.tag_check(soup),
+        ]
 
 
 class MessagingScraper(object):
