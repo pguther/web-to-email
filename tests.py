@@ -33,6 +33,8 @@ class TestCase(unittest.TestCase):
         self.non_ucsc_domain_url = 'http://google.com'
         self.non_messaging_ucsc_url = 'http://www.ucsc.edu'
         self.messaging_url = 'http://messaging.ucsc.edu/testing/may/admin-letter-test.html'
+        self.errors_email = 'http://messaging.ucsc.edu/testing/web-to-email/' \
+                            'testing-the-error-checkers-on-web-to-email.html'
 
     def test_non_url(self):
         """
@@ -81,6 +83,33 @@ class TestCase(unittest.TestCase):
         email_table = result_div.find('table', {'class': 'main'})
 
         assert email_table is not None
+
+    def test_errors_email(self):
+        """
+        test a messaging.ucsc.edu post
+        :return:
+        """
+        rv = self.app.get('/?url=' + self.errors_email, follow_redirects=True)
+        error_messages = self.get_error_messages(rv.data)
+        assert len(error_messages) == 0
+        soup = BeautifulSoup(rv.data, 'lxml')
+
+        missing_src_list = soup.find_all('li', {'class': 'missing-source'})
+        assert len(missing_src_list) == 1
+
+        missing_alt_list = soup.find_all('li', {'class': 'missing-alt-text'})
+        assert len(missing_alt_list) == 1
+
+        missing_href_list = soup.find_all('li', {'class': 'missing-href'})
+        assert len(missing_href_list) == 1
+
+        empty_link_list = soup.find_all('li', {'class': 'empty-link'})
+        assert len(empty_link_list) == 1
+
+        empty_tag_list = soup.find_all('li', {'class': 'empty-tag'})
+        assert len(empty_tag_list) == 2
+
+
 
 
 if __name__ == '__main__':
