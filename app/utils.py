@@ -176,7 +176,7 @@ class ArticleUtils(object):
         """
 
         tag_check = ErrorCategory('Tag Check')
-        empty_tag = ErrorType('Empty Tag')
+        empty_tag = ErrorType('Empty tag')
 
         for child in soup.recursiveChildGenerator():
             if isinstance(child, bs4.element.Tag):
@@ -208,8 +208,8 @@ class ArticleUtils(object):
         """
 
         image_check = ErrorCategory('Image Check')
-        missing_src = ErrorType('Missing Source')
-        missing_alt = ErrorType('Missing Alt Text')
+        missing_src = ErrorType('Missing source')
+        missing_alt = ErrorType('Missing alt text')
 
         images = soup.find_all("img")
         if images is not None:
@@ -245,7 +245,7 @@ class ArticleUtils(object):
         """
 
         link_check = ErrorCategory('Link Check')
-        empty_link = ErrorType('Empty Link')
+        empty_link = ErrorType('Empty link')
         missing_href = ErrorType('Missing href')
 
         links = soup.find_all("a")
