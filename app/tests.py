@@ -111,11 +111,11 @@ class TestArticleUtils(unittest.TestCase):
         assert image_errors.category == 'Image Check' and image_errors.class_name == 'image-check'
         assert len(image_errors.types) == 2
 
-        missing_src = image_errors.get_type('Missing Source')
+        missing_src = image_errors.get_type('Missing source')
         assert missing_src is not None
         assert len(missing_src.tags) == 2
 
-        missing_alt = image_errors.get_type('Missing Alt Text')
+        missing_alt = image_errors.get_type('Missing alt text')
         assert missing_alt is not None
         assert len(missing_alt.tags) == 5
 
@@ -137,7 +137,7 @@ class TestArticleUtils(unittest.TestCase):
         assert link_errors.category == 'Link Check' and link_errors.class_name == 'link-check'
         assert len(link_errors.types) == 2
 
-        empty_link = link_errors.get_type('Empty Link')
+        empty_link = link_errors.get_type('Empty link')
         assert empty_link is not None
         assert len(empty_link.tags) == 1
 
@@ -182,7 +182,7 @@ class TestArticleUtils(unittest.TestCase):
         assert tag_errors.category == 'Tag Check' and tag_errors.class_name == 'tag-check'
         assert len(tag_errors.types) == 1
 
-        empty_tag = tag_errors.get_type('Empty Tag')
+        empty_tag = tag_errors.get_type('Empty tag')
         assert empty_tag is not None
         assert len(empty_tag.tags) == 16
 
