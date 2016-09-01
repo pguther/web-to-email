@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 import re
 from unidecode import unidecode
 from premailer import Premailer
-import re
 
 
 class ContentNotHTMLException(Exception):
@@ -56,13 +55,6 @@ class ArticleUtils:
             'li':   True,
         }
 
-        self.url_regex = re.compile(r'^(?:http|ftp)s?://'
-                                    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
-                                    r'localhost|'
-                                    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-                                    r'(?::\d+)?'
-                                    r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-
     def get_soup_from_url(self, page_url):
         """
         Takes the url of a web page and returns a BeautifulSoup Soup object representation
@@ -78,13 +70,19 @@ class ArticleUtils:
             raise ContentNotHTMLException()
         return BeautifulSoup(r.content, 'lxml')
 
-    def validate_url(self, url):
+    def get_response(self, url):
         """
-        validates whether a url is malformed or not
+        Gets the response code for a url
         :param url:
         :return:
         """
-        return self.url_regex.match(url) is not None
+
+        # noinspection PyBroadException
+        try:
+            r = requests.get(url)
+        except:
+            return 404
+        return r.status_code
 
     def convert_urls(self, body, page_url):
         """
@@ -216,7 +214,7 @@ class ArticleUtils:
         """
 
         image_errors = {
-            'Malformed or Missing link: ': [],
+            'Missing src attribute: ': [],
             'Image has no alt text: ': [],
         }
 
@@ -224,10 +222,9 @@ class ArticleUtils:
         if images is not None:
             for image in images:
                 if 'src' not in image.attrs:
-                    image_errors['Malformed or Missing link: '].append(str(image))
-                else:
-                    if not self.validate_url(image['src']):
-                        image_errors['Malformed or Missing link: '].append(str(image))
+                    image_errors['Missing src attribute: '].append(str(image))
+                elif len(image['src'].lstrip().rstrip()) == 0:
+                    image_errors['Missing src attribute: '].append(str(image))
 
                 if 'alt' in image.attrs:
                     alt = image.attrs['alt'].lstrip().rstrip()
@@ -258,7 +255,7 @@ class ArticleUtils:
         """
 
         link_errors = {
-            'Malformed or Missing link: ': [],
+            'Missing href attribute: ': [],
             'Link is empty: ': [],
         }
 
@@ -276,10 +273,10 @@ class ArticleUtils:
                     if empty:
                         link_errors['Link is empty: '].append(str(link))
                 if 'href' not in link.attrs:
-                    link_errors['Malformed or Missing link: '].append(str(link))
+                    link_errors['Missing href attribute: '].append(str(link))
                 else:
-                    if not self.validate_url(link['href']):
-                        link_errors['Malformed or Missing link: '].append(str(link))
+                    if len(link['href'].lstrip().rstrip()) == 0:
+                        link_errors['Missing href attribute: '].append(str(link))
 
         no_errors = True
 

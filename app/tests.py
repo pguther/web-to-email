@@ -12,16 +12,6 @@ class TestArticleUtils(unittest.TestCase):
         """
         self.utils = ArticleUtils()
 
-    def test_validate_url(self):
-        """
-
-        :return:
-        """
-        assert self.utils.validate_url('http://www.google.com') == True
-        assert self.utils.validate_url('') == False
-        assert self.utils.validate_url('   ') == False
-        assert self.utils.validate_url('asdfasdf.sdaa') == False
-
     def test_convert_urls(self):
         """
         tests converting the urls in a soup
@@ -119,7 +109,7 @@ class TestArticleUtils(unittest.TestCase):
         image_errors = self.utils.image_check(soup)
 
         assert image_errors is not None and len(image_errors.keys()) == 2
-        assert len(image_errors['Malformed or Missing link: ']) == 3
+        assert len(image_errors['Missing src attribute: ']) == 2
         assert len(image_errors['Image has no alt text: ']) == 5
 
     def test_link_check(self):
@@ -137,10 +127,8 @@ class TestArticleUtils(unittest.TestCase):
 
         link_errors = self.utils.link_check(soup)
 
-        print link_errors
-
         assert link_errors is not None and len(link_errors.keys()) == 2
-        assert len(link_errors['Malformed or Missing link: ']) == 3
+        assert len(link_errors['Missing href attribute: ']) == 2
         assert len(link_errors['Link is empty: ']) == 1
 
     def test_tag_check(self):
