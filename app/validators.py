@@ -11,7 +11,7 @@ class MessagingURl(object):
     """
 
     def __call__(self, form, field):
-        messaging_regex = re.compile(r"^http:\/\/messaging.ucsc.edu\/.+")
+        messaging_regex = re.compile(r"^http:\/\/emailbuilder.ucsc.edu\/.+")
         ext = tldextract.extract(field.data)
         if ext.domain != 'ucsc':
             raise ValidationError('URL must belong to a UCSC domain')
