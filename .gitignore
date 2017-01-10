@@ -3,3 +3,4 @@
 *.pyc
 flask
 .coverage
+venv
