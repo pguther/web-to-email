@@ -31,4 +31,4 @@ class MessagingURl(object):
                 valid = True
 
         if not valid:
-            raise ValidationError('URL is not a messaging.ucsc.edu post')
+            raise ValidationError('URL must be from emailbuilder.ucsc.edu')
