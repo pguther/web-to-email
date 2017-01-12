@@ -32,9 +32,8 @@ class TestCase(unittest.TestCase):
         self.non_url = "ucsc"
         self.non_ucsc_domain_url = 'http://google.com'
         self.non_messaging_ucsc_url = 'http://www.ucsc.edu'
-        self.messaging_url = 'http://messaging.ucsc.edu/testing/may/admin-letter-test.html'
-        self.errors_email = 'http://messaging.ucsc.edu/testing/web-to-email/' \
-                            'testing-the-error-checkers-on-web-to-email.html'
+        self.messaging_url = 'http://emailbuilder.ucsc.edu/samples/newsletter/index.html'
+        self.errors_email = 'http://emailbuilder.ucsc.edu/samples/tests/test-email.html'
 
     def test_non_url(self):
         """
