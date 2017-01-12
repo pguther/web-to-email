@@ -31,8 +31,8 @@ class TestCase(unittest.TestCase):
 
         self.non_url = "ucsc"
         self.non_ucsc_domain_url = 'http://google.com'
-        self.non_messaging_ucsc_url = 'http://www.ucsc.edu'
-        self.messaging_url = 'http://emailbuilder.ucsc.edu/samples/newsletter/index.html'
+        self.non_emailbuilder_ucsc_url = 'http://www.ucsc.edu'
+        self.emailbuilder_url = 'http://emailbuilder.ucsc.edu/samples/newsletter/index.html'
         self.errors_email = 'http://emailbuilder.ucsc.edu/samples/tests/test-email.html'
 
     def test_non_url(self):
@@ -56,22 +56,22 @@ class TestCase(unittest.TestCase):
         assert len(error_messages) == 1
         assert error_messages[0] == 'URL must belong to a UCSC domain '
 
-    def test_non_messaging_ucsc_url(self):
+    def test_non_emailbuilder_ucsc_url(self):
         """
-        test entering a url that belongs to a ucsc domain but not messaging.ucsc.edu
+        test entering a url that belongs to a ucsc domain but not emailbuilder.ucsc.edu
         :return:
         """
-        rv = self.app.get('/?url=' + self.non_messaging_ucsc_url, follow_redirects=True)
+        rv = self.app.get('/?url=' + self.non_emailbuilder_ucsc_url, follow_redirects=True)
         error_messages = self.get_error_messages(rv.data)
         assert len(error_messages) == 1
-        assert error_messages[0] == 'URL is not a messaging.ucsc.edu post '
+        assert error_messages[0] == 'URL is not an emailbuilder.ucsc.edu post '
 
-    def test_messaging(self):
+    def test_emailbuilder(self):
         """
-        test a messaging.ucsc.edu post
+        test a emailbuilder.ucsc.edu post
         :return:
         """
-        rv = self.app.get('/?url=' + self.messaging_url, follow_redirects=True)
+        rv = self.app.get('/?url=' + self.emailbuilder_url, follow_redirects=True)
         error_messages = self.get_error_messages(rv.data)
         assert len(error_messages) == 0
         soup = BeautifulSoup(rv.data, 'lxml')
@@ -85,7 +85,7 @@ class TestCase(unittest.TestCase):
 
     def test_errors_email(self):
         """
-        test a messaging.ucsc.edu post
+        test a messaging.ucsc.edu post with errors
         :return:
         """
         rv = self.app.get('/?url=' + self.errors_email, follow_redirects=True)
@@ -106,7 +106,7 @@ class TestCase(unittest.TestCase):
         assert len(empty_link_list) == 1
 
         empty_tag_list = soup.find_all('li', {'class': 'empty-tag'})
-        assert len(empty_tag_list) == 2
+        assert len(empty_tag_list) == 1
 
 
 
