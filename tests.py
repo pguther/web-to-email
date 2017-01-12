@@ -64,7 +64,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/?url=' + self.non_emailbuilder_ucsc_url, follow_redirects=True)
         error_messages = self.get_error_messages(rv.data)
         assert len(error_messages) == 1
-        assert error_messages[0] == 'URL is not an emailbuilder.ucsc.edu post '
+        assert error_messages[0] == 'URL must be from emailbuilder.ucsc.edu '
 
     def test_emailbuilder(self):
         """
