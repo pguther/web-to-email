@@ -309,8 +309,6 @@ class MessagingScraper(object):
         """
         soup = self.utils.get_soup_from_url(url)
 
-        self.utils.zap_tag_contents(soup)
-
         self.utils.convert_urls(soup, url)
 
         # print str(soup.body)
@@ -326,7 +324,13 @@ class MessagingScraper(object):
 
         body.append(content_div)
 
-        premailer = Premailer(html=str(soup))
+        soup_string = str(soup)
+
+        zapper = GremlinZapper()
+
+        soup_string = zapper.zap_string(soup_string)
+
+        premailer = Premailer(html=soup_string)
 
         output = premailer.transform()
 
