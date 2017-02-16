@@ -309,6 +309,8 @@ class MessagingScraper(object):
         """
         soup = self.utils.get_soup_from_url(url)
 
+        self.utils.zap_tag_contents(soup)
+
         self.utils.convert_urls(soup, url)
 
         # print str(soup.body)
@@ -323,6 +325,8 @@ class MessagingScraper(object):
             content_div.insert(0, content.extract())
 
         body.append(content_div)
+
+        self.utils.zap_tag_contents(body)
 
         soup_string = str(soup)
 
