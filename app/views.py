@@ -4,6 +4,7 @@ from forms import URLForm
 from utils import MessagingScraper
 import requests
 import os
+import re
 
 
 @app.route('/', methods=['GET', ])
@@ -43,8 +44,9 @@ def send_error_to_slack(error, url):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
-    send_error_to_slack(e, request.url)
+def page_not_found(e):    
+    if re.search(r"\.[\w]{3,}$", request.path) is None:
+        send_error_to_slack(e, request.url)
     return render_template('404.html'), 404
 
 @app.errorhandler(403)
