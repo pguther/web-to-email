@@ -14,12 +14,12 @@ class MessagingURl(object):
         messaging_regex = re.compile(r"^http:\/\/emailbuilder.ucsc.edu\/.+")
         ext = tldextract.extract(field.data)
         if ext.domain != 'ucsc':
-            raise ValidationError('URL must belong to a UCSC domain.')
+            raise ValidationError('URL must belong to a UCSC domain')
         r = requests.get(field.data)
         if r.status_code != requests.codes.ok:            
             raise ValidationError('That URL was not found. Perhaps it isn\'t published yet?')
         if r.headers['content-type'] != 'text/html; charset=UTF-8':
-            raise ValidationError('That URL does not contain HTML.')
+            raise ValidationError('That URL does not contain HTML')
         soup = BeautifulSoup(r.content, 'lxml')
 
         valid = False
