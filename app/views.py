@@ -37,7 +37,7 @@ def flash_errors(form):
 
 def send_error_to_slack(error, url):
     slack_url = os.environ.get('SLACK_WEBHOOK_URL')
-    error_message = "Error in the *Web-to-Email* tool: %(error)s: \nURL: %(url)s" % locals()
+    error_message = "Error in the *Web-to-Email* tool: %(error)s \nURL: %(url)s" % locals()
     message_payload = {'text': error_message}
     requests.post(slack_url, json=message_payload)
 
