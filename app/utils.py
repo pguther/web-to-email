@@ -66,7 +66,7 @@ class ArticleUtils(object):
         """
         r = requests.get(page_url)
         if r.status_code != requests.codes.ok:
-            r.raise_for_status()
+            return 404
         if r.headers['content-type'] != 'text/html; charset=UTF-8':
             raise ContentNotHTMLException()
         return BeautifulSoup(r.content, 'lxml')
