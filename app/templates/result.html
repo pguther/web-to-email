@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>results</title>
+    <title>Results</title>
+    <link rel="icon" href="{{ url_for('static', filename='email-icon.png') }}" type="image/png">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
-    <link rel="stylesheet" href="/static/resultStyle.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='resultStyle.css') }}">
     <script>
         var code = 0;
 

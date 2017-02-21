@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='email-icon.png') }}" type="image/png">
     <title>Web to Email</title>
     <link rel="stylesheet" href="/static/indexStyle.css">
 </head>
@@ -27,7 +28,7 @@
                         {% endif %}
                     {% endwith %}
                     </p>
-                <p><input type="submit" value="Get Email Format HTML"></p>
+                <p><input type="submit" value="Fetch and prepare this URL"></p>
             </form>
         </div>
     </div>

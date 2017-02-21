@@ -15,12 +15,11 @@ class MessagingURl(object):
         ext = tldextract.extract(field.data)
         if ext.domain != 'ucsc':
             raise ValidationError('URL must belong to a UCSC domain')
-
         r = requests.get(field.data)
-        if r.status_code != requests.codes.ok:
-            r.raise_for_status()
+        if r.status_code != requests.codes.ok:            
+            raise ValidationError('That URL was not found. Perhaps it isn\'t published yet?')
         if r.headers['content-type'] != 'text/html; charset=UTF-8':
-            raise ValidationError('Content not HTML')
+            raise ValidationError('That URL does not contain HTML')
         soup = BeautifulSoup(r.content, 'lxml')
 
         valid = False
