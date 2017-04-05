@@ -289,6 +289,21 @@ class ArticleUtils(object):
         ]
 
 
+def is_ascii(s):
+    printstuff = False
+    import sys
+
+    for c in s:
+        if ord(c) >= 128:
+            printstuff = True
+        if printstuff:
+            sys.stdout.write(c)
+    if printstuff:
+        return False
+    return True
+
+    # return all(ord(c) < 128 for c in s)
+
 class MessagingScraper(object):
     """
     scrapes a tuesday newsday page
@@ -309,7 +324,7 @@ class MessagingScraper(object):
         """
         soup = self.utils.get_soup_from_url(url)
 
-        self.utils.zap_tag_contents(soup)
+        # self.utils.zap_tag_contents(soup)
 
         self.utils.convert_urls(soup, url)
 
@@ -326,13 +341,17 @@ class MessagingScraper(object):
 
         body.append(content_div)
 
-        self.utils.zap_tag_contents(body)
+        # self.utils.zap_tag_contents(body)
 
         soup_string = str(soup)
 
         zapper = GremlinZapper()
 
-        soup_string = zapper.zap_string(soup_string)
+        soup_string = soup.encode(formatter='html')
+
+        # print type(soup_string)
+        # print is_ascii(soup_string)
+        # print soup_string
 
         premailer = Premailer(html=soup_string)
 
@@ -341,6 +360,8 @@ class MessagingScraper(object):
         inline_body_soup = BeautifulSoup(output, 'lxml')
 
         content_tag = inline_body_soup.find('div', {'class': 'content_div'})
+
+        self.utils.zap_tag_contents(content_tag)
 
         errors = self.utils.get_errors_dict(content_tag)
 
@@ -357,8 +378,12 @@ class MessagingScraper(object):
 
                 if isinstance(content, bs4.element.Comment):
                     content_string += '<!--' + str(content) + '-->'
-                else:
+                elif isinstance(content, bs4.element.NavigableString):
                     content_string += str(content)
+                elif isinstance(content, bs4.element.Tag):
+                    content_string += content.encode(formatter='html')
+
+        print content_string
 
         return content_string, errors
 
