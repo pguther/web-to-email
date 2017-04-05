@@ -288,22 +288,6 @@ class ArticleUtils(object):
             self.tag_check(soup),
         ]
 
-
-def is_ascii(s):
-    printstuff = False
-    import sys
-
-    for c in s:
-        if ord(c) >= 128:
-            printstuff = True
-        if printstuff:
-            sys.stdout.write(c)
-    if printstuff:
-        return False
-    return True
-
-    # return all(ord(c) < 128 for c in s)
-
 class MessagingScraper(object):
     """
     scrapes a tuesday newsday page
@@ -324,11 +308,7 @@ class MessagingScraper(object):
         """
         soup = self.utils.get_soup_from_url(url)
 
-        # self.utils.zap_tag_contents(soup)
-
         self.utils.convert_urls(soup, url)
-
-        # print str(soup.body)
 
         body = soup.body
 
@@ -341,17 +321,9 @@ class MessagingScraper(object):
 
         body.append(content_div)
 
-        # self.utils.zap_tag_contents(body)
-
-        soup_string = str(soup)
-
-        zapper = GremlinZapper()
 
         soup_string = soup.encode(formatter='html')
 
-        # print type(soup_string)
-        # print is_ascii(soup_string)
-        # print soup_string
 
         premailer = Premailer(html=soup_string)
 
