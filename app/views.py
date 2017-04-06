@@ -56,5 +56,7 @@ def page_not_found(e):
 
 @app.errorhandler(500)
 def page_not_found(e):
-    send_error_to_slack(e, request.url)
+    user_agent = request.headers.get('user-agent')
+    if re.search(r"Slackbot\-LinkExpanding", user_agent) is None:
+        send_error_to_slack(e, request.url)
     return render_template('500.html'), 500
