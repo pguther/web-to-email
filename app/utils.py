@@ -6,6 +6,7 @@ import re
 from unidecode import unidecode
 from premailer import Premailer
 from errors import ErrorCategory, ErrorType
+import htmlentitydefs as entity
 
 
 class ContentNotHTMLException(Exception):
@@ -84,6 +85,27 @@ class ArticleUtils(object):
         except:
             return 404
         return r.status_code
+
+    def unicode_to_html_entities(self, content_string):
+        """
+        converts all unicode characters in a string to their html entity equivalents
+        without converting any already existing html entities into their ascii equivalents
+        :param content_string:
+        :return:
+        """
+
+        transformed = ""
+        i = 0
+        while i < len(content_string):
+            if ord(content_string[i]) >= 128:
+                temp = content_string[i] + content_string[i + 1] + content_string[i + 2] + content_string[i + 3]
+                transformed += temp.decode('utf-8').encode('ascii', 'xmlcharrefreplace')
+                i += 4
+            else:
+                transformed += content_string[i]
+                i += 1
+
+        return transformed
 
     def convert_urls(self, body, page_url):
         """
@@ -321,9 +343,11 @@ class MessagingScraper(object):
 
         body.append(content_div)
 
+        # soup_string = str(soup)
 
         soup_string = soup.encode(formatter='html')
 
+        soup_string = self.utils.unicode_to_html_entities(soup_string)
 
         premailer = Premailer(html=soup_string)
 
@@ -333,9 +357,7 @@ class MessagingScraper(object):
 
         content_tag = inline_body_soup.find('div', {'class': 'content_div'})
 
-        self.utils.zap_tag_contents(content_tag)
-
-        errors = self.utils.get_errors_dict(content_tag)
+        # print content_tag.encode(formatter='html')
 
         content_string = ''
 
@@ -355,7 +377,11 @@ class MessagingScraper(object):
                 elif isinstance(content, bs4.element.Tag):
                     content_string += content.encode(formatter='html')
 
-        print content_string
+        content_string = self.utils.unicode_to_html_entities(content_string)
+
+        self.utils.zap_tag_contents(content_tag)
+
+        errors = self.utils.get_errors_dict(content_tag)
 
         return content_string, errors
 
