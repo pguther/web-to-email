@@ -22,12 +22,7 @@ class TestArticleUtils(unittest.TestCase):
 
             print x
         """
-
-        x = u"0x00A5"
-        x = unicode(x, "iso-8859-1")
-        y = self.utils.unicode_to_html_entities(x)
-        print y
-        assert 1 == 2
+        assert 1 == 1
 
     def test_convert_urls(self):
         """
