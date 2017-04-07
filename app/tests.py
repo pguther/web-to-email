@@ -49,44 +49,6 @@ class TestArticleUtils(unittest.TestCase):
         assert 'href' in link.attrs
         assert link.attrs['href'] == url_base + 'resultStyle.css'
 
-    def test_add_inline__ucsc_css(self):
-        """
-        tests adding the inline ucsc css to elements
-        :return:
-        """
-        html = '<img src="/image.html"/> ' \
-               '<a href="/index.html"/> ' \
-               '<h1>This is a sample Title</h1> ' \
-               '<p>This is some Sample Text</p> '
-
-        html = self.utils.add_inline_ucsc_css(html)
-
-        soup = BeautifulSoup(html, 'lxml')
-
-        image = soup.find('img')
-        assert image is not None
-        assert 'height' in image.attrs and 'style' in image.attrs
-        assert image.attrs['height'] == 'auto'
-        assert image.attrs['style'] == 'height:auto; max-width:100%'
-
-        a = soup.find('a')
-        assert a is not None
-        assert 'style' in a.attrs
-        assert a.attrs['style'] == 'color:#09c; -webkit-transition:color 0.2s ease-out; ' \
-                                   'text-decoration:none; transition:color 0.2s ease-out'
-
-        h1 = soup.find('h1')
-        assert h1 is not None
-        assert 'align' in h1.attrs and 'style' in h1.attrs
-        assert h1.attrs['align'] == 'left'
-        assert h1.attrs['style'] == 'color:#3a3a3a; font-weight:300; line-height:1.1em; margin-bottom:0.25em; ' \
-                                    'margin-top:0; font-size:2.2rem; text-align:left'
-
-        p = soup.find('p')
-        assert p is not None
-        assert 'style' in p.attrs
-        assert p.attrs['style'] == 'margin:0 0 2em'
-
     def test_image_check(self):
         """
 
