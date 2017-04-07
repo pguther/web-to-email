@@ -97,7 +97,12 @@ class ArticleUtils(object):
         while i < len(content_string):
             if ord(content_string[i]) >= 128:
                 temp = content_string[i] + content_string[i + 1] + content_string[i + 2] + content_string[i + 3]
-                transformed += temp.decode('utf-8').encode('ascii', 'xmlcharrefreplace')
+                print temp + content_string[i + 4] + content_string[i + 5] + content_string[i + 6] + content_string[i + 7]
+
+                try:
+                    transformed += temp.decode('utf-8').encode('ascii', 'xmlcharrefreplace')
+                except UnicodeDecodeError as e:
+                    transformed += temp.decode('iso-8859-1').encode('ascii', 'xmlcharrefreplace')
                 i += 4
             else:
                 transformed += content_string[i]

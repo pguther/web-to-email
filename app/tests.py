@@ -1,4 +1,5 @@
 import unittest
+import sys
 from utils import ArticleUtils
 from bs4 import BeautifulSoup
 
@@ -11,6 +12,22 @@ class TestArticleUtils(unittest.TestCase):
         :return:
         """
         self.utils = ArticleUtils()
+
+    def test_unicode_to_html_entities(self):
+
+        """
+        for i in xrange(200):
+            x = unichr(i)
+            y = self.utils.unicode_to_html_entities(x)
+
+            print x
+        """
+
+        x = u"0x00A5"
+        x = unicode(x, "iso-8859-1")
+        y = self.utils.unicode_to_html_entities(x)
+        print y
+        assert 1 == 2
 
     def test_convert_urls(self):
         """
