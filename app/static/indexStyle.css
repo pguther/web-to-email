@@ -1,4 +1,5 @@
 #main {
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
@@ -37,4 +38,11 @@ H2 {
     border:1px solid
     #d3d2d1;
     border-radius:5px;
+}
+
+.message {
+    background: rgba(253,199,0,.5);
+    border-radius: 5px;
+    display: inline-block;
+    padding: 1em 1.5em;
 }
