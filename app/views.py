@@ -9,7 +9,7 @@ import re
 
 @app.route('/', methods=['GET', ])
 def index():
-    form = URLForm()
+    Flaskform = URLForm()
     if 'url' in request.args:
         url = request.args.get('url')
         form.url.data = url
@@ -28,7 +28,7 @@ def index():
         return redirect(url_for('index'))
     else:
         return render_template('index.html',
-                               form=URLForm())
+                               Flaskform=URLForm())
 
 
 def flash_errors(form):
