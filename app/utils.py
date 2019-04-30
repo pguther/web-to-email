@@ -1,4 +1,7 @@
-from urllib.parse import urlparse, urljoin
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
 import bs4
 import requests
 from bs4 import BeautifulSoup
