@@ -4,5 +4,5 @@ from wtforms.validators import DataRequired, URL
 from form_validators import MessagingURl
 
 
-class URLForm(FlaskForm):
+class URLForm(Form):
     url = StringField('url', validators=[DataRequired(), URL(), MessagingURl()])
