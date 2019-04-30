@@ -1,6 +1,6 @@
 import unittest
 import sys
-from utils import ArticleUtils
+from .utils import ArticleUtils
 from bs4 import BeautifulSoup
 
 
