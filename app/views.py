@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app
 from .forms import URLForm
-from app.utils import MessagingScraper
+from .utils import MessagingScraper
 import requests
 import os
 import re
