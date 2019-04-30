@@ -1,10 +1,10 @@
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import bs4
 import requests
 from bs4 import BeautifulSoup
 import re
 from premailer import Premailer
-from errors import ErrorCategory, ErrorType
+from .errors import ErrorCategory, ErrorType
 
 
 class ContentNotHTMLException(Exception):
