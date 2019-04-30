@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app
-from forms import URLForm
+from .forms import URLForm
 from utils import MessagingScraper
 import requests
 import os
@@ -9,7 +9,7 @@ import re
 
 @app.route('/', methods=['GET', ])
 def index():
-    Flaskform = URLForm()
+    form = URLForm()
     if 'url' in request.args:
         url = request.args.get('url')
         form.url.data = url
@@ -28,7 +28,7 @@ def index():
         return redirect(url_for('index'))
     else:
         return render_template('index.html',
-                               Flaskform=URLForm())
+                               form=URLForm())
 
 
 def flash_errors(form):
