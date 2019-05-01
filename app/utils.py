@@ -98,7 +98,7 @@ class ArticleUtils(object):
         transformed = ""
         i = 0
         while i < len(content_string):
-            if ord(str[content_string[i]]) >= 128:
+            if ord[str(content_string[i])] >= 128:
                 temp = content_string[i] + content_string[i + 1] + content_string[i + 2] + content_string[i + 3]
                 print(temp + content_string[i + 4] + content_string[i + 5] + content_string[i + 6] + content_string[i + 7])
 
