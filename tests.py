@@ -30,10 +30,10 @@ class TestCase(unittest.TestCase):
         self.app = app.test_client()
 
         self.non_url = "ucsc"
-        self.non_ucsc_domain_url = 'http://google.com'
-        self.non_emailbuilder_ucsc_url = 'http://www.ucsc.edu'
-        self.emailbuilder_url = 'http://emailbuilder.ucsc.edu/samples/newsletter/index.html'
-        self.errors_email = 'http://emailbuilder.ucsc.edu/samples/tests/test-email.html'
+        self.non_ucsc_domain_url = 'https://google.com'
+        self.non_emailbuilder_ucsc_url = 'https://www.ucsc.edu'
+        self.emailbuilder_url = 'https://emailbuilder.ucsc.edu/samples/newsletter/index.html'
+        self.errors_email = 'https://emailbuilder.ucsc.edu/samples/tests/test-email.html'
 
     def test_non_url(self):
         """
