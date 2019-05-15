@@ -44,7 +44,7 @@ class TestCase(unittest.TestCase):
         error_messages = self.get_error_messages(rv.data)
         assert len(error_messages) == 2
         assert error_messages[0] == 'Invalid URL. '
-        assert error_messages[1] == 'Invalid URL \'ucsc\': No schema supplied. Perhaps you meant https://ucsc? '
+        assert error_messages[1] == 'Invalid URL ucsc: No schema supplied. Perhaps you meant https://ucsc? '
 
     def test_non_domain(self):
         """
