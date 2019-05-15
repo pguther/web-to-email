@@ -32,8 +32,8 @@ class TestCase(unittest.TestCase):
         self.non_url = "ucsc"
         self.non_ucsc_domain_url = 'https://google.com'
         self.non_emailbuilder_ucsc_url = 'https://www.ucsc.edu'
-        self.emailbuilder_url = 'http://emailbuilder.ucsc.edu/samples/newsletter/index.html'
-        self.errors_email = 'http://emailbuilder.ucsc.edu/samples/tests/test-email.html'
+        self.emailbuilder_url = 'https://emailbuilder.ucsc.edu/samples/newsletter/index.html'
+        self.errors_email = 'https://emailbuilder.ucsc.edu/samples/tests/test-email.html'
 
     def test_non_url(self):
         """
@@ -42,9 +42,11 @@ class TestCase(unittest.TestCase):
         """
         rv = self.app.get('/?url=' + self.non_url, follow_redirects=True)
         error_messages = self.get_error_messages(rv.data)
-        assert len(error_messages) == 2
-        assert error_messages[0] == 'Invalid URL. '
+        assert len(error_messages) == 1
+        assert error_messages[0] == 'Invalid URL. Two '
+        '''
         assert error_messages[1] == 'Invalid URL \'ucsc\': No schema supplied. Perhaps you meant https://ucsc? '
+        '''
 
     def test_non_domain(self):
         """
