@@ -1,5 +1,4 @@
 #!flask/bin/python
-import urllib
 import unittest
 from app import app
 from bs4 import BeautifulSoup
