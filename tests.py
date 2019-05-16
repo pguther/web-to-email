@@ -39,7 +39,7 @@ class TestCase(unittest.TestCase):
         test entering something that isn't a valid url
         :return:
         """
-        rv = self.app.get('http://www.google.com/?url=' + self.non_url, follow_redirects=True)
+        rv = self.app.get('/?url=' + self.non_url, follow_redirects=True)
         error_messages = self.get_error_messages(rv.data)
         assert len(error_messages) == 2
         assert error_messages[0] == 'Invalid URL. '
