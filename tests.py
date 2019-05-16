@@ -35,7 +35,16 @@ class TestCase(unittest.TestCase):
         self.emailbuilder_url = 'https://emailbuilder.ucsc.edu/samples/newsletter/index.html'
         self.errors_email = 'https://emailbuilder.ucsc.edu/samples/tests/test-email.html'
 
-    
+    def test_non_url(self):
+        """
+        test entering something that isn't a valid url
+        :return:
+        """
+        rv = self.app.get('/?url=' + self.non_url, follow_redirects=True)
+        error_messages = self.get_error_messages(rv.data)
+        assert len(error_messages) == 2
+        assert error_messages[0] == 'Invalid URL. '
+        assert error_messages[1] == 'Invalid URL \'ucsc\': No schema supplied. Perhaps you meant https://ucsc? '
 
     def test_non_domain(self):
         """
