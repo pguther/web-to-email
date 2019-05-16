@@ -29,7 +29,7 @@ class TestCase(unittest.TestCase):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         self.app = app.test_client()
-        self.non_url = 'https://google.com'
+        self.non_url = 'ucsc'
         self.non_ucsc_domain_url = 'https://google.com'
         self.non_emailbuilder_ucsc_url = 'https://www.ucsc.edu'
         self.emailbuilder_url = 'https://emailbuilder.ucsc.edu/samples/newsletter/index.html'
