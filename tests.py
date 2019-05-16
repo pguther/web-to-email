@@ -12,7 +12,7 @@ class TestCase(unittest.TestCase):
         :param soup:
         :return:
         """
-        soup = BeautifulSoup(html, 'lxml')
+        soup = bs4.BeautifulSoup(html, 'lxml')
 
         flashed_message_tags = soup.find_all('span', {'class': 'flashed-message'})
 
@@ -26,6 +26,7 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         app.config['TESTING'] = True
+        PRESERVE_CONTEXT_ON_EXCEPTION = False
         app.config['WTF_CSRF_ENABLED'] = False
         self.app = app.test_client()
 
