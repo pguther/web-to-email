@@ -40,7 +40,6 @@ class TestCase(unittest.TestCase):
         test entering something that isn't a valid url
         :return:
         """
-        print self.app.get
         rv = self.app.get('/?url=' + self.non_url, follow_redirects=True)
         error_messages = self.get_error_messages(rv.data)
         assert len(error_messages) == 2
