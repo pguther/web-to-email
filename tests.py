@@ -12,7 +12,7 @@ class TestCase(unittest.TestCase):
         :param soup:
         :return:
         """
-        soup = bs4.BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html, 'lxml')
 
         flashed_message_tags = soup.find_all('span', {'class': 'flashed-message'})
 
