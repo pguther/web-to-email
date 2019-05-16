@@ -1,5 +1,5 @@
 #!flask/bin/python
-import unittest
+import .unittest
 from app import app
 from bs4 import BeautifulSoup
 
@@ -26,7 +26,6 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         app.config['TESTING'] = True
-        PRESERVE_CONTEXT_ON_EXCEPTION = False
         app.config['WTF_CSRF_ENABLED'] = False
         self.app = app.test_client()
 
