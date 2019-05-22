@@ -12,24 +12,11 @@
             <a href="/"><h1>Web to Email</h1></a>
         </div>
         <div id="form">
-            <form action="" method="get" name="get_url">
-                <p>
-                    <H2>URL to Convert</H2>
-                    {{ form.url(class_="query") }}<br>
-                    {% for error in form.url.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}<br>
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                <span class="flashed-message" style="color: red;">{{ message }} </span>
-                                <br>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    </p>
-                <p><input type="submit" value="Fetch and prepare this URL"></p>
-            </form>
+
+The new iModules email workflow is available and this Web-to-Email tool is no longer required to send iModules emails. <b>The WCMS Email builder and this Web-to-Email tool were officially sunset on May 15, 2019.</b>
+
+<p><a href="https://support.imodules.com/hc/en-us/articles/360002564771-Email-Home" title="Email Home &amp;ndash; iModules Support Center">Learn more about the new iModules email workflow.</a></p>
+
         </div>
     </div>
 
